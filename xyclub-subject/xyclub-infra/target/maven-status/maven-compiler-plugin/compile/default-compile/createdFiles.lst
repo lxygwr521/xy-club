@@ -1,0 +1,4 @@
+com\xyclub\subject\infra\basic\dao\SubjectCategoryDao.class
+com\xyclub\subject\infra\basic\service\SubjectCategoryService.class
+com\xyclub\subject\infra\basic\entity\SubjectCategory.class
+com\xyclub\subject\infra\basic\service\impl\SubjectCategoryServiceImpl.class
