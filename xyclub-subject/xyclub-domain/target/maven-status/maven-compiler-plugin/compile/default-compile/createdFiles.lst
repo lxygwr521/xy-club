@@ -1,0 +1,5 @@
+com\xyclub\subject\domain\entity\SubjectLabelBO.class
+com\xyclub\subject\domain\convert\SubjectLabelConverter.class
+com\xyclub\subject\domain\service\SubjectLabelDomainService.class
+com\xyclub\subject\domain\service\impl\SubjectLabelDomainServiceImpl.class
+com\xyclub\subject\domain\convert\SubjectLabelConverterImpl.class

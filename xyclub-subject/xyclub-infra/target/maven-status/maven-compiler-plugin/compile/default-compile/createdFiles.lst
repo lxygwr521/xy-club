@@ -1,4 +1,12 @@
 com\xyclub\subject\infra\basic\dao\SubjectCategoryDao.class
+com\xyclub\subject\infra\basic\service\impl\SubjectLabelServiceImpl.class
+com\xyclub\subject\infra\basic\dao\SubjectLabelDao.class
+com\xyclub\subject\infra\basic\entity\SubjectLabel.class
+com\xyclub\subject\infra\basic\service\impl\SubjectMappingServiceImpl.class
 com\xyclub\subject\infra\basic\service\SubjectCategoryService.class
-com\xyclub\subject\infra\basic\entity\SubjectCategory.class
 com\xyclub\subject\infra\basic\service\impl\SubjectCategoryServiceImpl.class
+com\xyclub\subject\infra\basic\entity\SubjectMapping.class
+com\xyclub\subject\infra\basic\entity\SubjectCategory.class
+com\xyclub\subject\infra\basic\dao\SubjectMappingDao.class
+com\xyclub\subject\infra\basic\service\SubjectLabelService.class
+com\xyclub\subject\infra\basic\service\SubjectMappingService.class
