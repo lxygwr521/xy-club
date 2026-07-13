@@ -1,14 +1,12 @@
 package com.xyclub.subject.infra.basic.service.impl;
 
-import com.xyclub.subject.infra.basic.entity.SubjectCategory;
 import com.xyclub.subject.infra.basic.dao.SubjectCategoryDao;
+import com.xyclub.subject.infra.basic.entity.SubjectCategory;
 import com.xyclub.subject.infra.basic.service.SubjectCategoryService;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 题目分类(SubjectCategory)表服务实现类
@@ -32,17 +30,9 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
         return this.subjectCategoryDao.queryById(id);
     }
 
-    /**
-     * 分页查询
-     *
-     * @param subjectCategory 筛选条件
-     * @param pageRequest      分页对象
-     * @return 查询结果
-     */
     @Override
-    public Page<SubjectCategory> queryByPage(SubjectCategory subjectCategory, PageRequest pageRequest) {
-        long total = this.subjectCategoryDao.count(subjectCategory);
-        return new PageImpl<>(this.subjectCategoryDao.queryAllByLimit(subjectCategory, pageRequest), pageRequest, total);
+    public List<SubjectCategory> queryCategory(SubjectCategory subjectCategory) {
+        return this.subjectCategoryDao.queryCategory(subjectCategory);
     }
 
     /**
@@ -64,9 +54,9 @@ public class SubjectCategoryServiceImpl implements SubjectCategoryService {
      * @return 实例对象
      */
     @Override
-    public SubjectCategory update(SubjectCategory subjectCategory) {
-        this.subjectCategoryDao.update(subjectCategory);
-        return this.queryById(subjectCategory.getId());
+    public int update(SubjectCategory subjectCategory) {
+        return this.subjectCategoryDao.update(subjectCategory);
+
     }
 
     /**

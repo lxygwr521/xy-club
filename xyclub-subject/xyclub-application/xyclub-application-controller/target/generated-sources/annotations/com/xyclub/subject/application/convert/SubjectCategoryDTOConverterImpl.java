@@ -8,13 +8,27 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-12T17:21:58+0800",
+    date = "2026-07-13T15:41:21+0800",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.15.1 (Oracle Corporation)"
 )
 public class SubjectCategoryDTOConverterImpl implements SubjectCategoryDTOConverter {
 
     @Override
-    public SubjectCategoryBO convertDtoToBO(SubjectCategoryDTO subjectCategoryDTO) {
+    public List<SubjectCategoryDTO> convertBoToCategoryDTOList(List<SubjectCategoryBO> subjectCategoryDTO) {
+        if ( subjectCategoryDTO == null ) {
+            return null;
+        }
+
+        List<SubjectCategoryDTO> list = new ArrayList<SubjectCategoryDTO>( subjectCategoryDTO.size() );
+        for ( SubjectCategoryBO subjectCategoryBO : subjectCategoryDTO ) {
+            list.add( convertBoToCategoryDTO( subjectCategoryBO ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public SubjectCategoryBO convertDtoToCategoryBO(SubjectCategoryDTO subjectCategoryDTO) {
         if ( subjectCategoryDTO == null ) {
             return null;
         }
@@ -32,7 +46,7 @@ public class SubjectCategoryDTOConverterImpl implements SubjectCategoryDTOConver
     }
 
     @Override
-    public SubjectCategoryDTO convertBOToDTO(SubjectCategoryBO subjectCategoryBO) {
+    public SubjectCategoryDTO convertBoToCategoryDTO(SubjectCategoryBO subjectCategoryBO) {
         if ( subjectCategoryBO == null ) {
             return null;
         }
@@ -47,19 +61,5 @@ public class SubjectCategoryDTOConverterImpl implements SubjectCategoryDTOConver
         subjectCategoryDTO.setCount( subjectCategoryBO.getCount() );
 
         return subjectCategoryDTO;
-    }
-
-    @Override
-    public List<SubjectCategoryDTO> convertBOToDTOList(List<SubjectCategoryBO> subjectCategoryBOList) {
-        if ( subjectCategoryBOList == null ) {
-            return null;
-        }
-
-        List<SubjectCategoryDTO> list = new ArrayList<SubjectCategoryDTO>( subjectCategoryBOList.size() );
-        for ( SubjectCategoryBO subjectCategoryBO : subjectCategoryBOList ) {
-            list.add( convertBOToDTO( subjectCategoryBO ) );
-        }
-
-        return list;
     }
 }

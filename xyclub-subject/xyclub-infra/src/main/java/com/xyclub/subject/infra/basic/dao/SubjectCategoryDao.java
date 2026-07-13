@@ -2,8 +2,7 @@ package com.xyclub.subject.infra.basic.dao;
 
 import com.xyclub.subject.infra.basic.entity.SubjectCategory;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -22,15 +21,6 @@ public interface SubjectCategoryDao {
      * @return 实例对象
      */
     SubjectCategory queryById(Long id);
-
-    /**
-     * 查询指定行数据
-     *
-     * @param subjectCategory 查询条件
-     * @param pageable         分页对象
-     * @return 对象列表
-     */
-    List<SubjectCategory> queryAllByLimit(SubjectCategory subjectCategory, @Param("pageable") Pageable pageable);
 
     /**
      * 统计总行数
@@ -54,7 +44,7 @@ public interface SubjectCategoryDao {
      * @param entities List<SubjectCategory> 实例对象列表
      * @return 影响行数
      */
-    int insertBatch(@Param("entities") List<SubjectCategory> entities);
+//    int insertBatch(@Param("entities") List<SubjectCategory> entities);
 
     /**
      * 批量新增或按主键更新数据（MyBatis原生foreach方法）
@@ -63,7 +53,7 @@ public interface SubjectCategoryDao {
      * @return 影响行数
      * @throws org.springframework.jdbc.BadSqlGrammarException 入参是空List的时候会抛SQL语句错误的异常，请自行校验入参
      */
-    int insertOrUpdateBatch(@Param("entities") List<SubjectCategory> entities);
+//    int insertOrUpdateBatch(@Param("entities") List<SubjectCategory> entities);
 
     /**
      * 修改数据
@@ -80,6 +70,10 @@ public interface SubjectCategoryDao {
      * @return 影响行数
      */
     int deleteById(Long id);
+
+    List<SubjectCategory> queryCategory(SubjectCategory subjectCategory);
+
+//    Integer querySubjectCount(Long id);
 
 }
 
