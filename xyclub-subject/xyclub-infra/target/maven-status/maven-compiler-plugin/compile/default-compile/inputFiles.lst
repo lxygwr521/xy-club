@@ -1,6 +1,7 @@
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectBrief.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectInfoServiceImpl.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\SubjectBriefService.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\config\SqlStatementInterceptor.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectMappingServiceImpl.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectRadio.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectMultipleServiceImpl.java
@@ -19,8 +20,10 @@ E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\x
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectCategoryServiceImpl.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\SubjectCategoryService.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectBriefServiceImpl.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\config\MybatisPlusAllSqlLog.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\utils\DruidEncryptUtil.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\dao\SubjectMultipleDao.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\config\MybatisConfiguration.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectCategory.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\dao\SubjectJudgeDao.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectRadioServiceImpl.java

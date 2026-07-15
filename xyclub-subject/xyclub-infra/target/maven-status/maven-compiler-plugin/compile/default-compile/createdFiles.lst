@@ -1,6 +1,8 @@
 com\xyclub\subject\infra\basic\service\SubjectMultipleService.class
 com\xyclub\subject\infra\basic\dao\SubjectMultipleDao.class
+com\xyclub\subject\infra\config\MybatisPlusAllSqlLog.class
 com\xyclub\subject\infra\basic\entity\SubjectLabel.class
+com\xyclub\subject\infra\config\MybatisConfiguration.class
 com\xyclub\subject\infra\basic\service\SubjectRadioService.class
 com\xyclub\subject\infra\basic\dao\SubjectJudgeDao.class
 com\xyclub\subject\infra\basic\entity\SubjectMultiple.class
@@ -22,6 +24,7 @@ com\xyclub\subject\infra\basic\service\SubjectCategoryService.class
 com\xyclub\subject\infra\basic\service\impl\SubjectCategoryServiceImpl.class
 com\xyclub\subject\infra\basic\service\impl\SubjectJudgeServiceImpl.class
 com\xyclub\subject\infra\basic\entity\SubjectMapping.class
+com\xyclub\subject\infra\config\SqlStatementInterceptor.class
 com\xyclub\subject\infra\basic\service\impl\SubjectBriefServiceImpl.class
 com\xyclub\subject\infra\basic\dao\SubjectMappingDao.class
 com\xyclub\subject\infra\basic\dao\SubjectInfoDao.class

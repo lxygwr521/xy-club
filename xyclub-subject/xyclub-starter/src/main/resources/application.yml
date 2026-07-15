@@ -29,3 +29,11 @@ spring:
           enabled: true
 
 publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAILawJVkn5U/pXU5FuNzW4uTynYGy87hA5tUCAYK/0f45/vsSncpm7wFeblHkqTsymx9/8lIGxff70scjs8GVAECAwEAAQ==
+
+# 指定日志配置文件，sys-sql 日志会通过该配置输出。
+logging:
+  config: classpath:log4j2-spring.xml
+# MyBatis Plus 自带控制台 SQL 日志开关，当前使用自定义拦截器输出完整 SQL，因此默认保留注释。
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
