@@ -38,12 +38,19 @@
                a.update_time,
                a.is_deleted
         from subject_info a
-                 inner join subject_mapping b on a.id = b.subject_id   -- 加上关联条件
-        where a.subject_difficult = #{subjectInfo.subjectDifficult}
+                 inner join subject_mapping b on a.id = b.subject_id
+        where 1 = 1
           and b.category_id = #{categoryId}
           and b.label_id = #{labelId}
           and a.is_deleted = 0
           and b.is_deleted = 0
+        <if test="subjectInfo.subjectDifficult != null">
+            and a.subject_difficult = #{subjectInfo.subjectDifficult}
+        </if>
+        <if test="subjectInfo.subjectType != null">
+            and a.subject_type = #{subjectInfo.subjectType}
+        </if>
+        limit #{start}, #{pageSize}
     </select>
 
     <select id="queryAllByLimit" resultMap="SubjectInfoMap">
@@ -137,12 +144,18 @@
     <select id="countByCondition" resultType="java.lang.Integer">
         select count(1)
         from subject_info a
-                 inner join subject_mapping b on a.id = b.subject_id   -- 加上关联条件
-        where a.subject_difficult = #{subjectInfo.subjectDifficult}
-          and b.category_id = #{categoryId}                    -- 用下划线
-          and b.label_id = #{labelId}                          -- 用下划线
+                 inner join subject_mapping b on a.id = b.subject_id
+        where 1 = 1
+          and b.category_id = #{categoryId}
+          and b.label_id = #{labelId}
           and a.is_deleted = 0
           and b.is_deleted = 0
+        <if test="subjectInfo.subjectDifficult != null">
+            and a.subject_difficult = #{subjectInfo.subjectDifficult}
+        </if>
+        <if test="subjectInfo.subjectType != null">
+            and a.subject_type = #{subjectInfo.subjectType}
+        </if>
     </select>
 
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

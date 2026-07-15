@@ -2,11 +2,13 @@ package com.xyclub.subject.domain.convert;
 
 import com.xyclub.subject.domain.entity.SubjectAnswerBO;
 import com.xyclub.subject.infra.basic.entity.SubjectRadio;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-15T11:09:25+0800",
+    date = "2026-07-15T13:09:41+0800",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.15.1 (Oracle Corporation)"
 )
 public class RadioSubjectConverterImpl implements RadioSubjectConverter {
@@ -24,5 +26,33 @@ public class RadioSubjectConverterImpl implements RadioSubjectConverter {
         subjectRadio.setIsCorrect( subjectAnswerBO.getIsCorrect() );
 
         return subjectRadio;
+    }
+
+    @Override
+    public List<SubjectAnswerBO> convertEntityToBoList(List<SubjectRadio> subjectRadioList) {
+        if ( subjectRadioList == null ) {
+            return null;
+        }
+
+        List<SubjectAnswerBO> list = new ArrayList<SubjectAnswerBO>( subjectRadioList.size() );
+        for ( SubjectRadio subjectRadio : subjectRadioList ) {
+            list.add( subjectRadioToSubjectAnswerBO( subjectRadio ) );
+        }
+
+        return list;
+    }
+
+    protected SubjectAnswerBO subjectRadioToSubjectAnswerBO(SubjectRadio subjectRadio) {
+        if ( subjectRadio == null ) {
+            return null;
+        }
+
+        SubjectAnswerBO subjectAnswerBO = new SubjectAnswerBO();
+
+        subjectAnswerBO.setOptionType( subjectRadio.getOptionType() );
+        subjectAnswerBO.setOptionContent( subjectRadio.getOptionContent() );
+        subjectAnswerBO.setIsCorrect( subjectRadio.getIsCorrect() );
+
+        return subjectAnswerBO;
     }
 }

@@ -11,4 +11,6 @@ public interface SubjectBriefService {
     SubjectBrief update(SubjectBrief subjectBrief);
 
     boolean deleteById(Long id);
+
+    SubjectBrief queryByCondition(SubjectBrief subjectBrief);
 }

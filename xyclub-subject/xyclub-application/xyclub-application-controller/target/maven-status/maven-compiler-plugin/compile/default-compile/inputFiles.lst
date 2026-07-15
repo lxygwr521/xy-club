@@ -7,5 +7,6 @@ E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-applic
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\dto\SubjectLabelDTO.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\controller\SubjectCategoryController.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\controller\SubjectController.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\config\GlobalConfig.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\convert\SubjectLabelDTOConverter.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-application\xyclub-application-controller\src\main\java\com\xyclub\subject\application\dto\SubjectAnswerDTO.java

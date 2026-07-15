@@ -15,4 +15,6 @@ public interface SubjectRadioService {
     SubjectRadio update(SubjectRadio subjectRadio);
 
     boolean deleteById(Long id);
+
+    List<SubjectRadio> queryByCondition(SubjectRadio subjectRadio);
 }

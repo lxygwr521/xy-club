@@ -1,5 +1,7 @@
+com\xyclub\subject\domain\convert\JudgeSubjectConverter.class
 com\xyclub\subject\domain\service\SubjectLabelDomainService.class
 com\xyclub\subject\domain\entity\SubjectOptionBO.class
+com\xyclub\subject\domain\convert\JudgeSubjectConverterImpl.class
 com\xyclub\subject\domain\convert\MultipleSubjectConverterImpl.class
 com\xyclub\subject\domain\service\impl\SubjectLabelDomainServiceImpl.class
 com\xyclub\subject\domain\entity\SubjectLabelBO.class

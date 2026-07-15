@@ -3,6 +3,7 @@ package com.xyclub.subject.domain.handler.subject;
 import com.xyclub.subject.common.enums.IsDeletedFlagEnum;
 import com.xyclub.subject.common.enums.SubjectInfoTypeEnum;
 import com.xyclub.subject.domain.convert.RadioSubjectConverter;
+import com.xyclub.subject.domain.entity.SubjectAnswerBO;
 import com.xyclub.subject.domain.entity.SubjectInfoBO;
 import com.xyclub.subject.domain.entity.SubjectOptionBO;
 import com.xyclub.subject.infra.basic.entity.SubjectRadio;
@@ -42,7 +43,13 @@ public class RadioTypeHandler implements SubjectTypeHandler{
 
     @Override
     public SubjectOptionBO query(int subjectId) {
-        return null;
+        SubjectRadio subjectRadio = new SubjectRadio();
+        subjectRadio.setSubjectId(Long.valueOf(subjectId));
+        List<SubjectRadio> result = subjectRadioService.queryByCondition(subjectRadio);
+        List<SubjectAnswerBO> subjectAnswerBOList = RadioSubjectConverter.INSTANCE.convertEntityToBoList(result);
+        SubjectOptionBO subjectOptionBO = new SubjectOptionBO();
+        subjectOptionBO.setOptionList(subjectAnswerBOList);
+        return subjectOptionBO;
     }
 
 }

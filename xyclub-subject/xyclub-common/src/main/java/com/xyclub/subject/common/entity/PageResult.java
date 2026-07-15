@@ -2,6 +2,7 @@ package com.xyclub.subject.common.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @date 2026/07/14 17:26
  **/
 @Data
-public class PageResult<T> {
+public class PageResult<T> implements Serializable {
     private Integer pageNo = 1;
 
     private Integer pageSize = 20;

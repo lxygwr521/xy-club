@@ -40,4 +40,9 @@ public class SubjectMultipleServiceImpl implements SubjectMultipleService {
     public boolean deleteById(Long id) {
         return subjectMultipleDao.deleteById(id) > 0;
     }
+
+    @Override
+    public List<SubjectMultiple> queryByCondition(SubjectMultiple subjectMultiple) {
+        return subjectMultipleDao.queryAllByLimit(subjectMultiple);
+    }
 }

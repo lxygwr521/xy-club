@@ -34,4 +34,9 @@ public class SubjectBriefServiceImpl implements SubjectBriefService {
     public boolean deleteById(Long id) {
         return subjectBriefDao.deleteById(id) > 0;
     }
+
+    @Override
+    public SubjectBrief queryByCondition(SubjectBrief subjectBrief) {
+        return subjectBriefDao.queryAllByLimit(subjectBrief);
+    }
 }

@@ -6,6 +6,7 @@ import com.xyclub.subject.infra.basic.service.SubjectJudgeService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service("subjectJudgeService")
 public class SubjectJudgeServiceImpl implements SubjectJudgeService {
@@ -33,5 +34,10 @@ public class SubjectJudgeServiceImpl implements SubjectJudgeService {
     @Override
     public boolean deleteById(Long id) {
         return subjectJudgeDao.deleteById(id) > 0;
+    }
+
+    @Override
+    public List<SubjectJudge> queryByCondition(SubjectJudge subjectJudge) {
+        return subjectJudgeDao.queryAllByLimit(subjectJudge);
     }
 }

@@ -3,6 +3,7 @@ package com.xyclub.subject.domain.handler.subject;
 import com.xyclub.subject.common.enums.IsDeletedFlagEnum;
 import com.xyclub.subject.common.enums.SubjectInfoTypeEnum;
 import com.xyclub.subject.domain.convert.MultipleSubjectConverter;
+import com.xyclub.subject.domain.entity.SubjectAnswerBO;
 import com.xyclub.subject.domain.entity.SubjectInfoBO;
 import com.xyclub.subject.domain.entity.SubjectOptionBO;
 import com.xyclub.subject.infra.basic.entity.SubjectMultiple;
@@ -40,7 +41,13 @@ public class MultipleTypeHandler implements SubjectTypeHandler{
 
     @Override
     public SubjectOptionBO query(int subjectId) {
-        return null;
+        SubjectMultiple subjectMultiple = new SubjectMultiple();
+        subjectMultiple.setSubjectId(Long.valueOf(subjectId));
+        List<SubjectMultiple> result = subjectMultipleService.queryByCondition(subjectMultiple);
+        List<SubjectAnswerBO> subjectAnswerBOList = MultipleSubjectConverter.INSTANCE.convertEntityToBoList(result);
+        SubjectOptionBO subjectOptionBO = new SubjectOptionBO();
+        subjectOptionBO.setOptionList(subjectAnswerBOList);
+        return subjectOptionBO;
     }
 
 }
