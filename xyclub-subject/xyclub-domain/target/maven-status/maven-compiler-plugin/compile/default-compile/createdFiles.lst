@@ -1,5 +1,11 @@
-com\xyclub\subject\domain\entity\SubjectLabelBO.class
-com\xyclub\subject\domain\convert\SubjectLabelConverter.class
 com\xyclub\subject\domain\service\SubjectLabelDomainService.class
+com\xyclub\subject\domain\entity\SubjectOptionBO.class
+com\xyclub\subject\domain\convert\MultipleSubjectConverterImpl.class
 com\xyclub\subject\domain\service\impl\SubjectLabelDomainServiceImpl.class
+com\xyclub\subject\domain\entity\SubjectLabelBO.class
+com\xyclub\subject\domain\convert\BriefSubjectConverter.class
+com\xyclub\subject\domain\convert\SubjectLabelConverter.class
 com\xyclub\subject\domain\convert\SubjectLabelConverterImpl.class
+com\xyclub\subject\domain\handler\subject\BriefTypeHandler.class
+com\xyclub\subject\domain\convert\MultipleSubjectConverter.class
+com\xyclub\subject\domain\convert\BriefSubjectConverterImpl.class

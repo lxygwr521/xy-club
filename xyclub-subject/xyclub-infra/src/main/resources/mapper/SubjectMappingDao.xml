@@ -47,4 +47,13 @@
             </if>
         </where>
     </select>
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into subject_mapping(subject_id, category_id, label_id, created_by, created_time,
+                                    update_by, update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.subjectId}, #{entity.categoryId}, #{entity.labelId}, #{entity.createdBy},
+             #{entity.createdTime}, #{entity.updateBy}, #{entity.updateTime}, #{entity.isDeleted})
+        </foreach>
+    </insert>
 </mapper>

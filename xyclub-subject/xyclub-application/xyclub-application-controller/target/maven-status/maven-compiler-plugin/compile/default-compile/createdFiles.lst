@@ -1,4 +1,6 @@
-com\xyclub\subject\application\controller\SubjectLabelController.class
-com\xyclub\subject\application\dto\SubjectLabelDTO.class
 com\xyclub\subject\application\convert\SubjectLabelDTOConverterImpl.class
 com\xyclub\subject\application\convert\SubjectLabelDTOConverter.class
+com\xyclub\subject\application\controller\SubjectController.class
+com\xyclub\subject\application\controller\SubjectLabelController.class
+com\xyclub\subject\application\dto\SubjectLabelDTO.class
+com\xyclub\subject\application\dto\SubjectInfoDTO.class
