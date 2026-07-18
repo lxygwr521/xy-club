@@ -1,6 +1,6 @@
 spring:
   application:
-    name: xyclub-oss
+    name: xyclub-subject
   profiles:
     active: dev
   cloud:

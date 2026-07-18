@@ -92,6 +92,16 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         List<SubjectInfo> subjectInfoList = subjectInfoService.queryPage(subjectInfo, subjectInfoBO.getCategoryId()
                 , subjectInfoBO.getLabelId(), start, subjectInfoBO.getPageSize());
         List<SubjectInfoBO> subjectInfoBOS = SubjectInfoConverter.INSTANCE.convertListInfoToBO(subjectInfoList);
+        subjectInfoBOS.forEach(info->{
+            SubjectMapping subjectMapping = new SubjectMapping();
+            subjectMapping.setSubjectId(info.getId());
+            List<SubjectMapping> mappingList = subjectMappingService.queryLabelId(subjectMapping);
+            List<Long> labelIds = mappingList.stream().map(SubjectMapping::getLabelId).collect(Collectors.toList());
+            List<SubjectLabel> labelList = subjectLabelService.batchQueryById(labelIds);
+            List<String> labelNames = labelList.stream().map(SubjectLabel::getLabelName).collect(Collectors.toList());
+            info.setLabelName(labelNames);
+        });
+
         pageResult.setRecords(subjectInfoBOS);
         pageResult.setTotal(count);
         return pageResult;

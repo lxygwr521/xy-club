@@ -1,0 +1,24 @@
+server:
+  port: 5000
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: oss
+          uri: lb://xyclub-oss
+          predicates:
+            - Path=/oss/**
+          filters:
+            - StripPrefix=1
+        - id: auth
+          uri: lb://xyclub-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        - id: subject
+          uri: lb://xyclub-subject
+          predicates:
+            - Path=/subject/**
+          filters:
+            - StripPrefix=1
