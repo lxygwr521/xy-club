@@ -9,12 +9,36 @@
     <file url="file://$PROJECT_DIR$/xyclub-application/xyclub-application-job/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-application/xyclub-application-mq/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-application/xyclub-application-mq/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-controller/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-controller/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-job/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-job/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-mq/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-application/xyclub-auth-application-mq/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-domain/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-domain/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-infra/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-infra/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-starter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-auth/xyclub-auth-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-domain/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-domain/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-gateway/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-infra/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-infra/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-oss/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/xyclub-oss/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/xyclub-subject/src/main/java" charset="UTF-8" />

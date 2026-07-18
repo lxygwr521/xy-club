@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: xyclub-oss
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 182.92.176.188:8848
+        prefix: ${spring.application.name}
+        group: DEFAULT_GROUP
+        namespace:
+        file-extension: yaml

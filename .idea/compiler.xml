@@ -8,13 +8,23 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="xyclub-common" />
+        <module name="xyclub-auth-application-controller" />
         <module name="xyclub-application-mq" />
-        <module name="xyclub-application-controller" />
+        <module name="xyclub-oss" />
+        <module name="xyclub-auth-infra" />
+        <module name="xyclub-auth-application-job" />
+        <module name="xyclub-auth-api" />
         <module name="xyclub-application-job" />
-        <module name="xyclub-subject-api" />
+        <module name="xyclub-gateway" />
+        <module name="xyclub-auth-common" />
+        <module name="xyclub-auth-starter" />
         <module name="xyclub-domain" />
         <module name="xyclub-infra" />
         <module name="xyclub-starter" />
+        <module name="xyclub-auth-domain" />
+        <module name="xyclub-application-controller" />
+        <module name="xyclub-auth-application-mq" />
+        <module name="xyclub-subject-api" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">

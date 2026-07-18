@@ -1,39 +1,189 @@
-# Repository Guidelines
+# AGENTS.md
 
-## 项目结构与模块组织
+本文档面向在 `xyclub-subject` 模块内工作的编码助手和协作者。进入本目录或其子目录处理任务时，优先遵守本文档约定。
 
-这是一个 Java 8 多模块 Maven 服务，根目录 `pom.xml` 聚合题目领域相关模块：
+## 模块定位
 
-- `xyclub-common`：公共实体、枚举、统一返回对象，以及 Lombok、MapStruct 等通用依赖。
-- `xyclub-domain`：领域对象、转换器和领域服务实现。
-- `xyclub-infra`：持久化实体、MyBatis-Plus DAO、基础服务、工具类，以及 `src/main/resources/mapper` 下的 XML 映射文件。
-- `xyclub-application`：应用层适配模块，其中 `xyclub-application-controller` 放置 REST Controller、DTO 和 DTO 转换器；`job`、`mq` 模块用于后续任务和消息相关逻辑。
-- `xyclub-starter`：Spring Boot 启动入口和运行配置，配置文件位于 `src/main/resources/application.yml`。
-- `xyclub-subject-api`：API 相关模块和共享依赖管理占位。
+`xyclub-subject` 是 `xy-club` 的题目领域服务，采用 Java 8 + Maven 多模块结构，主要负责题目分类、标签、题目主信息、题型答案、题目查询等能力。
 
-Java 包名保持在 `com.xyclub.subject` 下。不要手动修改 `target/` 目录中的编译或生成产物。
+根模块 `pom.xml` 聚合以下子模块：
 
-## 构建、测试与本地运行
+| 模块 | 职责 |
+| --- | --- |
+| `xyclub-subject-api` | 对外 API 或共享契约占位模块 |
+| `xyclub-common` | 通用枚举、分页对象、统一返回对象、通用依赖 |
+| `xyclub-infra` | 持久化实体、DAO、基础 Service、MyBatis XML mapper |
+| `xyclub-domain` | 领域 BO、领域服务、题型处理器、MapStruct 转换器 |
+| `xyclub-application` | 应用层聚合模块 |
+| `xyclub-application/xyclub-application-controller` | REST Controller、DTO、DTO 转换器 |
+| `xyclub-application/xyclub-application-job` | 定时任务相关占位模块 |
+| `xyclub-application/xyclub-application-mq` | 消息队列相关占位模块 |
+| `xyclub-starter` | Spring Boot 启动入口和运行配置 |
 
-- `mvn clean package`：清理并构建所有模块，同时执行 Maven 测试阶段。
-- `mvn test`：运行整个 reactor 中的测试。
-- `mvn -pl xyclub-starter -am spring-boot:run`：启动服务及其依赖模块，默认端口为 `3000`。
-- `mvn -pl xyclub-infra -am package`：仅构建基础设施模块及其依赖，适合修改持久化代码时使用。
+不要手动修改 `target/` 下的编译产物、生成代码或拷贝后的配置文件，除非用户明确要求处理生成产物。
 
-除非处理特定模块任务，命令应从仓库根目录执行。
+## 常用命令
 
-## 编码风格与命名约定
+在 `xyclub-subject` 目录执行：
 
-使用 4 空格缩进，并保持 Java 8 兼容。遵循现有分层命名：Controller 入参和出参使用 `DTO`，领域对象使用 `BO`，MyBatis 接口使用 `Dao`，服务接口和实现使用 `Service`、`ServiceImpl`。优先沿用已有 Lombok 注解，如 `@Data`、`@Getter`、`@Slf4j`。对象转换使用 MapStruct 接口，并保留 `INSTANCE` 访问方式。
+```powershell
+mvn validate
+mvn compile
+mvn clean package
+```
 
-## 测试指南
+常用局部构建：
 
-当前 POM 中尚未提交测试框架依赖，且只有空的 `xyclub-domain/src/test` 目录。新增业务行为时，应在对应模块的 `src/test/java` 下补充测试。测试类按被测对象命名，例如 `SubjectCategoryDomainServiceImplTest`。如需 Spring Boot 集成测试，请先在对应模块添加必要的 Maven 测试依赖。
+```powershell
+mvn -pl xyclub-infra -am compile
+mvn -pl xyclub-domain -am compile
+mvn -pl xyclub-application/xyclub-application-controller -am compile
+mvn -pl xyclub-starter -am spring-boot:run
+```
 
-## 提交与 Pull Request 规范
+当前项目可能存在 Maven warning，例如 `xyclub-subject-api` 中 `spring-boot-dependencies` 作为普通 dependency 使用 `import` scope。这属于既有问题，除非任务明确涉及 POM 修复，否则不要顺手改动。
 
-当前 Git 历史使用较短提交信息，例如 `init`、`Initial commit`。后续提交建议使用简洁的祈使句摘要，例如 `add category query validation`。提交 PR 时说明变更目的、影响模块、本地执行过的命令；如有任务编号请关联；涉及 API 变更时附上示例请求和响应。
+如果 Maven 因写入本地仓库或 `target/maven-status` 失败而报权限错误，先判断是否为本地文件权限或锁定问题，再按当前执行环境的权限规则处理。
 
-## 安全与配置提示
+## 分层约定
 
-`application.yml` 中的数据源、Druid 登录信息和加密密钥属于环境相关配置。不要提交真实生产密钥；优先通过本地覆盖配置或部署环境变量注入。
+### application-controller
+
+- Controller 只处理 HTTP 入参、出参和基础参数校验。
+- 入参/出参对象使用 `DTO`，放在 `application/dto`。
+- DTO 与 BO 转换使用 MapStruct converter，保持现有 `INSTANCE` 访问风格。
+- Controller 不直接调用 DAO，不直接拼装复杂业务逻辑。
+
+### domain
+
+- 领域层使用 `BO` 表示业务对象。
+- 领域服务负责业务编排，例如新增题目时：
+  1. 写入 `subject_info`
+  2. 根据 `subject_type` 分派到题型 handler
+  3. 写入 `subject_mapping`
+- 题型逻辑通过 `SubjectTypeHandler` 扩展，新增题型时优先补充 handler，而不是把题型分支散落在领域服务里。
+- 对象转换使用 MapStruct，转换接口放在 `domain/convert`。
+
+### infra
+
+- 持久化实体放在 `infra/basic/entity`。
+- DAO 接口放在 `infra/basic/dao`，XML 放在 `infra/src/main/resources/mapper`。
+- DAO 命名使用 `*Dao`，Service 命名使用 `*Service` 和 `*ServiceImpl`。
+- MyBatis XML 的 namespace 必须与 DAO 包名一致，例如：
+
+```xml
+<mapper namespace="com.xyclub.subject.infra.basic.dao.SubjectLabelDao">
+```
+
+- 新增实体字段时，要同步检查：
+  - entity 字段
+  - DAO 方法签名
+  - Service 接口和实现
+  - mapper resultMap
+  - select/insert/update/batch SQL
+  - BO/DTO/converter 是否需要同步字段
+
+## 表结构和关系文档
+
+题目领域表结构与关系文档位于：
+
+- `framework/table-relationship.md`
+- `framework/subject-data-structure.md`
+
+涉及以下核心表时，应先查看这些文档：
+
+| 表 | 说明 |
+| --- | --- |
+| `subject_category` | 题目分类，支持一级和二级分类 |
+| `subject_label` | 标签，包含 `category_id` |
+| `subject_info` | 题目主表 |
+| `subject_mapping` | 题目、分类、标签关联表 |
+| `subject_radio` | 单选题选项和答案 |
+| `subject_multiple` | 多选题选项和答案 |
+| `subject_judge` | 判断题答案 |
+| `subject_brief` | 简答题答案 |
+
+关系要点：
+
+- `subject_category.parent_id` 指向 `subject_category.id`。
+- `subject_label.category_id` 指向 `subject_category.id`。
+- `subject_mapping.subject_id` 指向 `subject_info.id`。
+- `subject_mapping.category_id` 指向 `subject_category.id`。
+- `subject_mapping.label_id` 指向 `subject_label.id`。
+- 各题型答案表通过 `subject_id` 指向 `subject_info.id`。
+
+## 枚举约定
+
+常用枚举在 `xyclub-common` 中：
+
+- `IsDeletedFlagEnum`
+  - `0`: 未删除
+  - `1`: 已删除
+- `CategoryTypeEnum`
+  - `1`: 一级分类
+  - `2`: 二级分类
+- `SubjectInfoTypeEnum`
+  - `1`: 单选
+  - `2`: 多选
+  - `3`: 判断
+  - `4`: 简答
+
+业务代码中优先使用枚举，不要散落魔法数字。
+
+## 编码风格
+
+- Java 版本保持 Java 8 兼容。
+- 使用 4 个空格缩进。
+- 优先沿用已有 Lombok 注解，例如 `@Data`、`@Getter`、`@Slf4j`。
+- 日志使用 `Slf4j`，复杂入参可参考现有服务用 `JSON.toJSONString` 输出。
+- 保持包名在 `com.xyclub.subject` 下。
+- 修改中文注释或文档时使用 UTF-8 编码。
+
+## 数据库和 SQL 注意事项
+
+- 当前代码主要依靠业务逻辑维护表关系，不要假设数据库一定有显式外键。
+- 多数表有 `is_deleted` 字段；查询业务数据时应注意过滤未删除数据。
+- XML 中批量插入和 `insertOrUpdateBatch` 容易出现字段顺序不一致问题，新增字段时务必核对列名和值顺序。
+- `subject_brief.subjectId` 当前实体类型是 `Integer`，其他题型表多为 `Long`。除非任务明确要求统一类型，否则不要顺手改动。
+
+## 测试和验证
+
+当前项目测试体系不完整，修改代码后至少执行相关模块编译：
+
+```powershell
+mvn compile
+```
+
+如只修改持久化层：
+
+```powershell
+mvn -pl xyclub-infra -am compile
+```
+
+如修改领域逻辑：
+
+```powershell
+mvn -pl xyclub-domain -am compile
+```
+
+如修改 Controller 或 DTO：
+
+```powershell
+mvn -pl xyclub-application/xyclub-application-controller -am compile
+```
+
+如果新增测试，放在对应模块的 `src/test/java` 下，测试类命名建议使用被测类名加 `Test`，例如 `SubjectLabelDomainServiceImplTest`。
+
+## 配置和安全
+
+- `xyclub-starter/src/main/resources/application.yml` 包含本地数据库、Druid 和加密相关配置。
+- 不要提交真实生产密钥、生产数据库地址或私人凭据。
+- 如需新增环境差异配置，优先使用本地覆盖、启动参数或环境变量。
+
+## 协作注意事项
+
+- 先读现有代码和 mapper，再动手改。
+- 保持改动范围与任务相关，不做无关重构。
+- 遇到已有未提交改动，不要回滚；如果影响当前任务，基于现状继续修改。
+- 不要因为编译生成了 `target/` 变更就把它们当作源码改动处理。
+- 如果修改了表结构相关代码，请同步更新 `framework/table-relationship.md`。

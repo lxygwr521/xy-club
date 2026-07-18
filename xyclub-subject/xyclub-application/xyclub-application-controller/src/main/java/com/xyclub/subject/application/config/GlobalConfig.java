@@ -30,7 +30,9 @@ public class GlobalConfig extends WebMvcConfigurationSupport {
 
     private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
+//        当 Jackson 遇到空对象时，不抛异常。
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+//        响应 JSON 中不输出 null 字段。
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter(objectMapper);
         return converter;
