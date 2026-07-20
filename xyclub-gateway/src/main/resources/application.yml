@@ -22,3 +22,24 @@ spring:
             - Path=/subject/**
           filters:
             - StripPrefix=1
+  redis:
+    database: 1
+    host: 182.92.176.188
+    port: 6379
+    password: jichi1234
+    timeout: 2s
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: -1ms
+        max-idle: 10
+        min-idle: 0
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: random-32
+  is-log: true
+  token-prefix: xyclub

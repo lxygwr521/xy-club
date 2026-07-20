@@ -1,6 +1,6 @@
 spring:
   application:
-    name: xyclub-oss
+    name: xyclub-gateway
   profiles:
     active: dev
 #      Nacos 注册发现配置

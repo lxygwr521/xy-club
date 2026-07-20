@@ -92,6 +92,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         List<SubjectInfo> subjectInfoList = subjectInfoService.queryPage(subjectInfo, subjectInfoBO.getCategoryId()
                 , subjectInfoBO.getLabelId(), start, subjectInfoBO.getPageSize());
         List<SubjectInfoBO> subjectInfoBOS = SubjectInfoConverter.INSTANCE.convertListInfoToBO(subjectInfoList);
+//        分页查询结果补充题目标签名称回显
         subjectInfoBOS.forEach(info->{
             SubjectMapping subjectMapping = new SubjectMapping();
             subjectMapping.setSubjectId(info.getId());
