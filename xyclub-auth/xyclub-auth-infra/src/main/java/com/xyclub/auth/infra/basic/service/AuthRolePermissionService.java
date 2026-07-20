@@ -22,4 +22,6 @@ public interface AuthRolePermissionService {
 
     boolean deleteById(Long id);
 
+    List<AuthRolePermission> queryByCondition(AuthRolePermission authRolePermission);
+
 }

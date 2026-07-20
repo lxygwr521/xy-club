@@ -1,24 +1,25 @@
 package com.xyclub.auth.domain.service.impl;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
+import com.google.gson.Gson;
 import com.xyclub.auth.common.enums.AuthUserStatusEnum;
 import com.xyclub.auth.common.enums.IsDeletedFlagEnum;
 import com.xyclub.auth.domain.constants.AuthConstant;
 import com.xyclub.auth.domain.convert.AuthUserBOConverter;
 import com.xyclub.auth.domain.entity.AuthUserBO;
+import com.xyclub.auth.domain.redis.RedisUtil;
 import com.xyclub.auth.domain.service.AuthUserDomainService;
-import com.xyclub.auth.infra.basic.entity.AuthRole;
-import com.xyclub.auth.infra.basic.entity.AuthUser;
-import com.xyclub.auth.infra.basic.entity.AuthUserRole;
-import com.xyclub.auth.infra.basic.service.AuthRoleService;
-import com.xyclub.auth.infra.basic.service.AuthUserRoleService;
-import com.xyclub.auth.infra.basic.service.AuthUserService;
+import com.xyclub.auth.infra.basic.entity.*;
+import com.xyclub.auth.infra.basic.service.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户领域service实现
@@ -37,9 +38,23 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     private AuthUserRoleService authUserRoleService;
 
     @Resource
+    private AuthPermissionService authPermissionService;
+
+    @Resource
+    private AuthRolePermissionService authRolePermissionService;
+
+    @Resource
     private AuthRoleService authRoleService;
 
     private String salt = "xyclub";
+
+    @Resource
+    private RedisUtil redisUtil;
+
+    private String authPermissionPrefix = "auth.permission";
+
+    private String authRolePrefix = "auth.role";
+
 
     @Override
     @SneakyThrows
@@ -62,6 +77,24 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         authUserRole.setRoleId(roleId);
         authUserRole.setIsDeleted(IsDeletedFlagEnum.UN_DELETED.getCode());
         authUserRoleService.insert(authUserRole);
+
+        String roleKey = redisUtil.buildKey(authRolePrefix, authUser.getUserName());
+        List<AuthRole> roleList = new LinkedList<>();
+        roleList.add(authRole);
+        redisUtil.set(roleKey, new Gson().toJson(roleList));
+
+        AuthRolePermission authRolePermission = new AuthRolePermission();
+        authRolePermission.setRoleId(roleId);
+        List<AuthRolePermission> rolePermissionList = authRolePermissionService.
+                queryByCondition(authRolePermission);
+
+        List<Long> permissionIdList = rolePermissionList.stream()
+                .map(AuthRolePermission::getPermissionId).collect(Collectors.toList());
+        //根据roleId查权限
+        List<AuthPermission> permissionList = authPermissionService.queryByRoleList(permissionIdList);
+        String permissionKey = redisUtil.buildKey(authPermissionPrefix, authUser.getUserName());
+        redisUtil.set(permissionKey, new Gson().toJson(permissionList));
+
         return count > 0;
     }
 

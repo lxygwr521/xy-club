@@ -35,4 +35,6 @@ public interface AuthRoleService {
      */
     AuthRole queryByCondition(AuthRole authRole);
 
+    List<AuthRole> queryByRoleList(List<Long> roleIdList);
+
 }

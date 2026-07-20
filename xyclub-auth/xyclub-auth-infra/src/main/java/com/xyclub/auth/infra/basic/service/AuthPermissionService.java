@@ -2,6 +2,8 @@ package com.xyclub.auth.infra.basic.service;
 
 import com.xyclub.auth.infra.basic.entity.AuthPermission;
 
+import java.util.List;
+
 /**
  * (AuthPermission)表服务接口
  *
@@ -29,5 +31,7 @@ public interface AuthPermissionService {
      * 通过主键删除数据
      */
     boolean deleteById(Long id);
+
+    List<AuthPermission> queryByRoleList(List<Long> roleIdList);
 
 }

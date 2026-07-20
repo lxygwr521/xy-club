@@ -75,30 +75,30 @@ domain/
 ├── constants/
 │   └── AuthConstant.java          # NORMAL_USER = "normal_user"
 ├── entity/
-│   ├── AuthUserBO.java            # 用户领域对象
-│   ├── AuthRoleBO.java            # 角色领域对象
-│   └── AuthPermissionBO.java      # 权限领域对象
+│   ├── AuthUserBO.java                # 用户领域对象
+│   ├── AuthRoleBO.java                # 角色领域对象
+│   ├── AuthPermissionBO.java          # 权限领域对象
+│   └── AuthRolePermissionBO.java      # 角色-权限关联对象 (含 permissionIdList)
 ├── convert/
-│   ├── AuthUserBOConverter.java   # UserBO → AuthUser
-│   ├── AuthRoleBOConverter.java   # RoleBO → AuthRole
-│   └── AuthPermissionBOConverter.java  # PermissionBO → AuthPermission
+│   ├── AuthUserBOConverter.java       # UserBO → AuthUser
+│   ├── AuthRoleBOConverter.java       # RoleBO → AuthRole
+│   └── AuthPermissionBOConverter.java # PermissionBO → AuthPermission
 └── service/
-    ├── AuthUserDomainService.java       # 用户领域服务接口
-    │   ├── register(BO) → Boolean      # 注册 (含密码加密 + 角色关联)
-    │   ├── update(BO) → Boolean        # 更新
-    │   └── delete(BO) → Boolean        # 逻辑删除
-    ├── AuthRoleDomainService.java       # 角色领域服务接口
-    │   ├── add(BO) → Boolean
-    │   ├── update(BO) → Boolean
-    │   └── delete(BO) → Boolean
-    ├── AuthPermissionDomainService.java # 权限领域服务接口
-    │   ├── add(BO) → Boolean
-    │   ├── update(BO) → Boolean
-    │   └── delete(BO) → Boolean
+    ├── AuthUserDomainService.java           # 用户领域服务
+    │   ├── register(BO) → Boolean          # 注册 (含密码加密 + 角色关联)
+    │   ├── update(BO) → Boolean            # 更新
+    │   └── delete(BO) → Boolean            # 逻辑删除
+    ├── AuthRoleDomainService.java           # 角色领域服务
+    │   ├── add / update / delete
+    ├── AuthPermissionDomainService.java     # 权限领域服务
+    │   ├── add / update / delete
+    ├── AuthRolePermissionDomainService.java # 角色-权限关联服务
+    │   └── add(BO) → Boolean               # 批量分配权限给角色
     └── impl/
-        ├── AuthUserDomainServiceImpl.java      # @Transactional 注册
+        ├── AuthUserDomainServiceImpl.java           # @Transactional 注册
         ├── AuthRoleDomainServiceImpl.java
-        └── AuthPermissionDomainServiceImpl.java
+        ├── AuthPermissionDomainServiceImpl.java
+        └── AuthRolePermissionDomainServiceImpl.java # 遍历 permissionIdList 批量插入
 ```
 
 **核心业务规则：**
@@ -108,6 +108,10 @@ domain/
 | 注册事务 | `@Transactional(rollbackFor = Exception.class)`，确保用户插入 + 角色关联一起成功 |
 | 默认角色 | 注册时自动分配 `normal_user` 角色 |
 | 逻辑删除 | 所有删除操作设为 `is_deleted = 1`，不物理删除 |
+| 批量分配权限 | `rolePermission/add` 传入 `permissionIdList`，遍历后调用 `batchInsert` 一次性写入 |
+
+---
+**统计：** 4 个 Controller · 12 个 Domain Service 方法 · 5 张数据表 · 5 套 MyBatis XML · 共计 60+ Java 类
 
 ---
 
@@ -117,20 +121,23 @@ domain/
 infra/
 ├── basic/
 │   ├── entity/
-│   │   ├── AuthUser.java         # auth_user 表实体 (14 字段)
-│   │   ├── AuthRole.java         # auth_role 表实体
-│   │   ├── AuthUserRole.java     # auth_user_role 关联表
-│   │   └── AuthPermission.java   # auth_permission 权限表 (13 字段)
+│   │   ├── AuthUser.java          # auth_user 表实体 (14 字段)
+│   │   ├── AuthRole.java          # auth_role 表实体
+│   │   ├── AuthUserRole.java      # auth_user_role 关联表
+│   │   ├── AuthPermission.java    # auth_permission 权限表 (13 字段，树形结构)
+│   │   └── AuthRolePermission.java # auth_role_permission 关联表
 │   ├── mapper/
 │   │   ├── AuthUserDao.java
 │   │   ├── AuthRoleDao.java
 │   │   ├── AuthUserRoleDao.java
-│   │   └── AuthPermissionDao.java
+│   │   ├── AuthPermissionDao.java
+│   │   └── AuthRolePermissionDao.java
 │   ├── service/
 │   │   ├── AuthUserService.java  + impl/
 │   │   ├── AuthRoleService.java  + impl/
 │   │   ├── AuthUserRoleService.java + impl/
-│   │   └── AuthPermissionService.java + impl/
+│   │   ├── AuthPermissionService.java + impl/
+│   │   └── AuthRolePermissionService.java + impl/
 │   └── utils/
 │       └── DruidEncryptUtil.java # 数据库密码加解密
 ├── config/
@@ -144,10 +151,11 @@ infra/
 **MyBatis 映射文件：**
 ```
 resources/mapper/
-├── AuthUserDao.xml         # auth_user 表 CRUD
-├── AuthRoleDao.xml         # auth_role 表 CRUD
-├── AuthUserRoleDao.xml     # auth_user_role 表 CRUD
-└── AuthPermissionDao.xml   # auth_permission 表 CRUD
+├── AuthUserDao.xml              # auth_user 表 CRUD
+├── AuthRoleDao.xml              # auth_role 表 CRUD
+├── AuthUserRoleDao.xml          # auth_user_role 表 CRUD
+├── AuthPermissionDao.xml        # auth_permission 表 CRUD
+└── AuthRolePermissionDao.xml    # auth_role_permission 表 CRUD
 ```
 
 ---
@@ -159,17 +167,20 @@ application-controller/
 ├── config/
 │   └── GlobalConfig.java            # MVC 配置：空值忽略、空 Bean 序列化
 ├── dto/
-│   ├── AuthUserDTO.java             # 用户请求 (userName/email/password...)
-│   ├── AuthRoleDTO.java             # 角色请求 (roleName/roleKey)
-│   └── AuthPermissionDTO.java       # 权限请求 (name/parentId/type/menuUrl...)
+│   ├── AuthUserDTO.java             # 用户请求
+│   ├── AuthRoleDTO.java             # 角色请求
+│   ├── AuthPermissionDTO.java       # 权限请求 (树形结构字段)
+│   └── AuthRolePermissionDTO.java   # 角色-权限关联请求 (含 permissionIdList)
 ├── convert/
-│   ├── AuthUserDTOConverter.java    # DTO → UserBO
-│   ├── AuthRoleDTOConverter.java    # DTO → RoleBO
-│   └── AuthPermissionDTOConverter.java  # DTO → PermissionBO
+│   ├── AuthUserDTOConverter.java
+│   ├── AuthRoleDTOConverter.java
+│   ├── AuthPermissionDTOConverter.java
+│   └── AuthRolePermissionDTOConverter.java
 └── controller/
-    ├── UserController.java          # /user/*     (register/update/delete/changeStatus/doLogin/isLogin)
-    ├── RoleController.java          # /role/*     (add/update/delete)
-    └── PermissionController.java    # /permission/* (add/update/delete)
+    ├── UserController.java             # /user/*
+    ├── RoleController.java             # /role/*
+    ├── PermissionController.java       # /permission/*
+    └── RolePermissionController.java   # /rolePermission/*
 ```
 
 **API 一览：**
@@ -188,46 +199,30 @@ application-controller/
 | PermissionController | `/permission/add` | POST | 新增权限 |
 | | `/permission/update` | POST | 修改权限 |
 | | `/permission/delete` | POST | 删除权限 |
+| RolePermissionController | `/rolePermission/add` | POST | 批量分配权限给角色 |
 
 ---
 
 ## 四、数据库表关系 (ER)
 
 ```
-┌──────────────┐     ┌──────────────────┐     ┌──────────────┐
-│  auth_user   │     │  auth_user_role  │     │  auth_role   │
-├──────────────┤     ├──────────────────┤     ├──────────────┤
-│ id (PK)      │←──→│ user_id  (FK)    │     │ id (PK)      │
-│ user_name    │     │ role_id  (FK)    │←──→│ role_name    │
-│ nick_name    │     │ created_by       │     │ role_key     │
-│ email        │     │ created_time     │     │ created_by   │
-│ phone        │     │ update_by        │     │ created_time │
-│ password     │     │ update_time      │     │ update_by    │
-│ sex          │     │ is_deleted       │     │ update_time  │
-│ avatar       │     └──────────────────┘     │ is_deleted   │
-│ status       │                              └──────────────┘
-│ introduce    │
-│ ext_json     │     ┌──────────────────┐
-│ created_by   │     │ auth_permission  │
-│ created_time │     ├──────────────────┤
-│ update_by    │     │ id (PK)          │
-│ update_time  │     │ name             │
-│ is_deleted   │     │ parent_id        │  ← 树形结构自引用
-└──────────────┘     │ type             │
-                     │ menu_url         │
-                     │ status           │
-                     │ show             │
-                     │ icon             │
-                     │ permission_key   │
-                     │ created_by       │
-                     │ created_time     │
-                     │ update_by        │
-                     │ update_time      │
-                     │ is_deleted       │
-                     └──────────────────┘
+┌──────────────┐     ┌──────────────────┐     ┌──────────────┐     ┌───────────────────────┐     ┌──────────────────┐
+│  auth_user   │     │  auth_user_role  │     │  auth_role   │     │  auth_role_permission │     │ auth_permission  │
+├──────────────┤     ├──────────────────┤     ├──────────────┤     ├───────────────────────┤     ├──────────────────┤
+│ id (PK)      │←──→│ user_id  (FK)    │     │ id (PK)      │←──→│ role_id (FK)           │     │ id (PK)          │
+│ user_name    │     │ role_id  (FK)    │←──→│ role_name    │     │ permission_id (FK)     │←──→│ name             │
+│ nick_name    │     │ ...              │     │ role_key     │     │ ...                    │     │ parent_id (自引用)│
+│ email        │     └──────────────────┘     │ ...          │     └───────────────────────┘     │ type             │
+│ phone        │                              └──────────────┘                                   │ menu_url         │
+│ password     │                                                                                  │ status           │
+│ sex          │                                                                                  │ icon             │
+│ avatar       │                                                                                  │ permission_key   │
+│ status       │                                                                                  │ ...              │
+│ ...          │                                                                                  └──────────────────┘
+└──────────────┘
 ```
 
-**关系说明：** 用户 ↔ 角色为多对多（通过 `auth_user_role` 关联表），权限独立管理（树形结构，`parent_id` 自引用），RBAC 模型预留扩展。
+**关系说明：** RBAC 模型已完整——① 用户 ↔ 角色（多对多，`auth_user_role`）② 角色 ↔ 权限（多对多，`auth_role_permission`）。权限表为树形结构（`parent_id` 自引用），支持菜单层级。
 
 ---
 

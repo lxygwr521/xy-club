@@ -3,17 +3,24 @@ package com.xyclub.gateway.auth;
 import cn.dev33.satoken.stp.StpInterface;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.xyclub.gateway.entity.AuthPermission;
+import com.xyclub.gateway.entity.AuthRole;
 import com.xyclub.gateway.redis.RedisUtil;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 自定义权限验证接口扩展
  * 只要实现 StpInterface 接口并交给 Spring 管理，Sa-Token 就会通过它来获取角色和权限数据。
  *
+ * @author lxy
+ * @date 2026-07-20
  */
 @Component
 public class StpInterfaceImpl implements StpInterface {
@@ -27,7 +34,6 @@ public class StpInterfaceImpl implements StpInterface {
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        System.out.println("123");
         return getAuth(loginId.toString(), authPermissionPrefix);
     }
 
@@ -42,7 +48,16 @@ public class StpInterfaceImpl implements StpInterface {
         if (StringUtils.isBlank(authValue)) {
             return Collections.emptyList();
         }
-        List<String> authList = new Gson().fromJson(authValue, List.class);
+        List<String> authList = new LinkedList<>();
+        if (authRolePrefix.equals(prefix)) {
+            List<AuthRole> roleList = new Gson().fromJson(authValue, new TypeToken<List<AuthRole>>() {
+            }.getType());
+            authList = roleList.stream().map(AuthRole::getRoleKey).collect(Collectors.toList());
+        } else if (authPermissionPrefix.equals(prefix)) {
+            List<AuthPermission> permissionList = new Gson().fromJson(authValue, new TypeToken<List<AuthPermission>>() {
+            }.getType());
+            authList = permissionList.stream().map(AuthPermission::getPermissionKey).collect(Collectors.toList());
+        }
         return authList;
     }
 
