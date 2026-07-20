@@ -30,4 +30,9 @@ public interface AuthRoleService {
      */
     boolean deleteById(Long id);
 
+    /**
+     * 根据条件查询角色
+     */
+    AuthRole queryByCondition(AuthRole authRole);
+
 }
