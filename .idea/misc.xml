@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/xyclub-oss/pom.xml" />
         <option value="$PROJECT_DIR$/xyclub-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/xyclub-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/xyclub-wx/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

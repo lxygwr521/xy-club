@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="xyclub-common" />
         <module name="xyclub-auth-application-controller" />
+        <module name="xyclub-wx" />
         <module name="xyclub-application-mq" />
         <module name="xyclub-oss" />
         <module name="xyclub-auth-infra" />

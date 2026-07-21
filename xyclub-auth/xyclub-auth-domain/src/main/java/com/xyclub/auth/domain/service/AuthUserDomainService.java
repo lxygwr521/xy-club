@@ -1,6 +1,7 @@
 package com.xyclub.auth.domain.service;
 
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import com.xyclub.auth.domain.entity.AuthUserBO;
 
 /**
@@ -25,5 +26,7 @@ public interface AuthUserDomainService {
      * 删除用户信息
      */
     Boolean delete(AuthUserBO authUserBO);
+
+    SaTokenInfo doLogin(String validCode);
 
 }

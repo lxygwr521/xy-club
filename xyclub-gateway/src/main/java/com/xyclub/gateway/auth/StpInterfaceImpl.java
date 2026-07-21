@@ -41,7 +41,7 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         return getAuth(loginId.toString(), authRolePrefix);
     }
-
+//从 Redis 读取缓存的角色/权限 JSON，反序列化后提取 key 列表返回给 Sa-Token 进行鉴权比对。
     private List<String> getAuth(String loginId, String prefix) {
         String authKey = redisUtil.buildKey(prefix, loginId.toString());
         String authValue = redisUtil.get(authKey);
