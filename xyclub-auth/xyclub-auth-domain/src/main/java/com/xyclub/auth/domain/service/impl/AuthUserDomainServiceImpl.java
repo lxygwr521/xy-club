@@ -134,7 +134,8 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @Override
     public Boolean update(AuthUserBO authUserBO) {
         AuthUser authUser = AuthUserBOConverter.INSTANCE.convertBOToEntity(authUserBO);
-        Integer count = authUserService.update(authUser);
+        // 按 userName 更新，兼容微信登录场景（无固定ID）
+        Integer count = authUserService.updateByUserName(authUser);
         return count > 0;
     }
 

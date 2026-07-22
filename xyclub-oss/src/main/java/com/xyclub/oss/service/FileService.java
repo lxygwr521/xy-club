@@ -25,6 +25,8 @@ public class   FileService {
 
     public String uploadFile(MultipartFile uploadFile, String bucket, String objectName) {
         storageAdapter.uploadFile(uploadFile, bucket, objectName);
+        // 拼接文件路径：目录/原文件名
+        objectName = objectName + "/" + uploadFile.getOriginalFilename();
         return storageAdapter.getUrl(bucket, objectName);
     }
 
