@@ -2,13 +2,15 @@ package com.xyclub.subject.common.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 分页请求实体
  * @author lxy
  * @date 2026/07/14 17:25
  **/
 @Data
-public class PageInfo {
+public class PageInfo implements Serializable {
     private Integer pageNo = 1;
 
     private Integer pageSize = 20;

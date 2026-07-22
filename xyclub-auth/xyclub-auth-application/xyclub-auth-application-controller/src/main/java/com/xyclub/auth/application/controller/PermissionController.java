@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 权限controller
@@ -81,6 +82,21 @@ public class PermissionController {
         } catch (Exception e) {
             log.error("PermissionController.delete.error:{}", e.getMessage(), e);
             return Result.fail("删除权限信息失败");
+        }
+    }
+
+    /**
+     * 查询用户权限列表
+     */
+    @RequestMapping("getPermission")
+    public Result<List<String>> getPermission(String userName) {
+        try {
+            log.info("PermissionController.getPermission.userName:{}", userName);
+            Preconditions.checkArgument(!StringUtils.isBlank(userName), "用户id不能为空");
+            return Result.ok(authPermissionDomainService.getPermission(userName));
+        } catch (Exception e) {
+            log.error("PermissionController.getPermission.error:{}", e.getMessage(), e);
+            return Result.fail("查询用户权限信息失败");
         }
     }
 

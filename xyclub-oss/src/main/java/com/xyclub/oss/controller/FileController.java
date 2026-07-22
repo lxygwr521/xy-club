@@ -3,6 +3,7 @@ package com.xyclub.oss.controller;
 import com.xyclub.oss.service.FileService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,6 +22,16 @@ public class FileController {
     public String testGetAllBuckets() throws Exception {
         List<String> allBucket = fileService.getAllBucket();
         return allBucket.get(0);
+    }
+
+    @RequestMapping("/getUrl")
+    public String getUrl(String bucketName, String objectName) throws Exception {
+        return fileService.getUrl(bucketName, objectName);
+    }
+
+    @RequestMapping("/upload")
+    public String upload(MultipartFile uploadFile, String bucket, String objectName) throws Exception {
+        return fileService.uploadFile(uploadFile, bucket, objectName);
     }
 
 }

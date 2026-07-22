@@ -2,6 +2,8 @@ package com.xyclub.auth.infra.basic.service;
 
 import com.xyclub.auth.infra.basic.entity.AuthRole;
 
+import java.util.List;
+
 /**
  * (AuthRole)表服务接口
  *

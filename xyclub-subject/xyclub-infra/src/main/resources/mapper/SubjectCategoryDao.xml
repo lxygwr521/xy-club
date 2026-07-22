@@ -201,6 +201,14 @@
         where id = #{id}
     </update>
 
+    <select id="querySubjectCount" resultType="java.lang.Integer">
+        select count(distinct subject_id)
+        from subject_mapping a,
+             subject_label b
+        where a.label_id = b.id
+        and b.category_id = #{id}
+    </select>
+
     <delete id="deleteById">
         delete from subject_category where id = #{id}
     </delete>

@@ -16,4 +16,6 @@ public interface SubjectCategoryService {
     int update(SubjectCategory subjectCategory);
 
     boolean deleteById(Long id);
+
+    Integer querySubjectCount(Long id);
 }

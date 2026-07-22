@@ -28,8 +28,8 @@ public interface SubjectCategoryDomainService {
     Boolean delete(SubjectCategoryBO subjectCategoryBO);
 
     /**
-//     * 查询分类及标签
-//     */
-//    List<SubjectCategoryBO> queryCategoryAndLabel(SubjectCategoryBO subjectCategoryBO);
+     * 查询分类及标签（一次性聚合）
+     */
+    List<SubjectCategoryBO> queryCategoryAndLabel(SubjectCategoryBO subjectCategoryBO);
 
 }

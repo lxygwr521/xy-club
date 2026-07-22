@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.common.base.Preconditions;
 import com.xyclub.subject.application.convert.SubjectCategoryDTOConverter;
+import com.xyclub.subject.application.convert.SubjectLabelDTOConverter;
 import com.xyclub.subject.application.dto.SubjectCategoryDTO;
+import com.xyclub.subject.application.dto.SubjectLabelDTO;
 import com.xyclub.subject.common.entity.Result;
 import com.xyclub.subject.domain.entity.SubjectCategoryBO;
 import com.xyclub.subject.domain.service.SubjectCategoryDomainService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -107,6 +110,38 @@ public class SubjectCategoryController {
      * @param subjectCategoryDTO
      * @return
      */
+    /**
+     * 查询分类及标签（一次性聚合，二级分类 + 标签）
+     */
+    @PostMapping("/queryCategoryAndLabel")
+    public Result<List<SubjectCategoryDTO>> queryCategoryAndLabel(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("SubjectCategoryController.queryCategoryAndLabel.dto:{}",
+                        JSON.toJSONString(subjectCategoryDTO));
+            }
+            Preconditions.checkNotNull(subjectCategoryDTO.getId(), "分类id不能为空");
+            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
+                    .convertDtoToCategoryBO(subjectCategoryDTO);
+            // 查询分类及标签聚合数据
+            List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService
+                    .queryCategoryAndLabel(subjectCategoryBO);
+            // DTO 组装：分类 + 其下标签列表
+            List<SubjectCategoryDTO> dtoList = new LinkedList<>();
+            subjectCategoryBOList.forEach(bo -> {
+                SubjectCategoryDTO dto = SubjectCategoryDTOConverter.INSTANCE.convertBoToCategoryDTO(bo);
+                List<SubjectLabelDTO> labelDTOList = SubjectLabelDTOConverter.INSTANCE
+                        .convertBOToLabelDTOList(bo.getLabelBOList());
+                dto.setLabelDTOList(labelDTOList);
+                dtoList.add(dto);
+            });
+            return Result.ok(dtoList);
+        } catch (Exception e) {
+            log.error("SubjectCategoryController.queryCategoryAndLabel.error:{}", e.getMessage(), e);
+            return Result.fail("查询分类及标签失败");
+        }
+    }
+
     @PostMapping("/delete")
     public Result<Boolean> delete(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {

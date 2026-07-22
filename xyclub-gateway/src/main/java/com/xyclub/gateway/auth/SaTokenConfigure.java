@@ -22,7 +22,7 @@ public class SaTokenConfigure {
                 .addInclude("/**")
                 .setAuth(obj -> {
                     System.out.println("-------- 前端访问path：" + SaHolder.getRequest().getRequestPath());
-                    SaRouter.match("/auth/**", "/auth/user/doLogin", r -> StpUtil.checkRole("admin"));
+//                    SaRouter.match("/auth/**", "/auth/user/doLogin", r -> StpUtil.checkRole("admin"));
                     SaRouter.match("/oss/**", r -> StpUtil.checkLogin());
                     SaRouter.match("/subject/subject/add", r -> StpUtil.checkPermission("subject:add"));
                     SaRouter.match("/subject/**", r -> StpUtil.checkLogin());

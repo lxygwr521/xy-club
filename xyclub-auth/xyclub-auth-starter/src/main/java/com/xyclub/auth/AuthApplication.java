@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.xyclub")
-//@MapperScan("com.xyclub.**.dao")
+@org.mybatis.spring.annotation.MapperScan("com.xyclub.**.mapper")
 public class AuthApplication {
 
     public static void main(String[] args) {

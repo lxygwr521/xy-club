@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.LinkedList;
@@ -65,6 +66,13 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     @SneakyThrows
     @Transactional(rollbackFor = Exception.class)
     public Boolean register(AuthUserBO authUserBO) {
+        //校验用户是否存在
+        AuthUser existAuthUser = new AuthUser();
+        existAuthUser.setUserName(authUserBO.getUserName());
+        List<AuthUser> existUser = authUserService.queryByCondition(existAuthUser);
+        if (existUser.size() > 0) {
+            return true;
+        }
         // 1. 转换并加密密码
         // 将业务对象(BO)转换为数据实体(Entity)
         AuthUser authUser = AuthUserBOConverter.INSTANCE.convertBOToEntity(authUserBO);
@@ -149,7 +157,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
     public SaTokenInfo doLogin(String validCode) {
         // 从 Redis 中取验证码对应的 OpenID：loginCode.537 → oXYZ789
         String loginKey = redisUtil.buildKey(LOGIN_PREFIX, validCode);
-        String openId = redisUtil.get(loginKey);
+        String openId =  redisUtil.get(loginKey);
         if (StringUtils.isBlank(openId)) {
             return null;
         }
@@ -161,5 +169,17 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         StpUtil.login(openId);
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         return tokenInfo;
+    }
+
+    @Override
+    public AuthUserBO getUserInfo(AuthUserBO authUserBO) {
+        AuthUser authUser = new AuthUser();
+        authUser.setUserName(authUserBO.getUserName());
+        List<AuthUser> userList = authUserService.queryByCondition(authUser);
+        if (CollectionUtils.isEmpty(userList)) {
+            return new AuthUserBO();
+        }
+        AuthUser user = userList.get(0);
+        return AuthUserBOConverter.INSTANCE.convertEntityToBO(user);
     }
 }

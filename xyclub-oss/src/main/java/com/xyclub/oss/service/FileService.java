@@ -2,6 +2,7 @@ package com.xyclub.oss.service;
 
 import com.xyclub.oss.adapter.StorageAdapter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,6 +17,15 @@ public class   FileService {
 
     public List<String> getAllBucket() {
         return storageAdapter.getAllBucket();
+    }
+
+    public String getUrl(String bucketName, String objectName) {
+        return storageAdapter.getUrl(bucketName, objectName);
+    }
+
+    public String uploadFile(MultipartFile uploadFile, String bucket, String objectName) {
+        storageAdapter.uploadFile(uploadFile, bucket, objectName);
+        return storageAdapter.getUrl(bucket, objectName);
     }
 
 }

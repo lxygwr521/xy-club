@@ -79,6 +79,8 @@ public class SubjectController {
             Preconditions.checkNotNull(subjectInfoDTO.getCategoryId(), "分类id不能为空");
             Preconditions.checkNotNull(subjectInfoDTO.getLabelId(), "标签id不能为空");
             SubjectInfoBO subjectInfoBO = SubjectInfoDTOConverter.INSTANCE.convertDTOToBO(subjectInfoDTO);
+            subjectInfoBO.setPageNo(subjectInfoDTO.getPageNo());
+            subjectInfoBO.setPageSize(subjectInfoDTO.getPageSize());
             PageResult<SubjectInfoBO> boPageResult = subjectInfoDomainService.getSubjectPage(subjectInfoBO);
             return Result.ok(boPageResult);
         } catch (Exception e) {
