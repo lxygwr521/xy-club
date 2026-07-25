@@ -5,19 +5,19 @@ spring:
     gateway:
       routes:
         - id: oss
-          uri: lb://xyclub-oss
+          uri: lb://xyclub-oss-dev
           predicates:
             - Path=/oss/**
           filters:
             - StripPrefix=1
         - id: auth
-          uri: lb://xyclub-auth
+          uri: lb://xyclub-auth-dev
           predicates:
             - Path=/auth/**
           filters:
             - StripPrefix=1
         - id: subject
-          uri: lb://xyclub-subject
+          uri: lb://xyclub-subject-dev
           predicates:
             - Path=/subject/**
           filters:

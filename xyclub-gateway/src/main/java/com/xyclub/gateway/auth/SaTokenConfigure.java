@@ -23,7 +23,9 @@ public class SaTokenConfigure {
                 .setAuth(obj -> {
                     System.out.println("-------- 前端访问path：" + SaHolder.getRequest().getRequestPath());
 //                    SaRouter.match("/auth/**", "/auth/user/doLogin", r -> StpUtil.checkRole("admin"));
+//                    校验当前请求的 Token 是否有效
                     SaRouter.match("/oss/**", r -> StpUtil.checkLogin());
+
                     SaRouter.match("/subject/subject/add", r -> StpUtil.checkPermission("subject:add"));
                     SaRouter.match("/subject/**", r -> StpUtil.checkLogin());
                 })

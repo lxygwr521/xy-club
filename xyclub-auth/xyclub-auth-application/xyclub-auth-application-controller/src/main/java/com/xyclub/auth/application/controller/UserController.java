@@ -5,10 +5,10 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.xyclub.auth.application.convert.AuthUserDTOConverter;
-import com.xyclub.auth.application.dto.AuthUserDTO;
-import com.xyclub.auth.common.entity.Result;
 import com.xyclub.auth.domain.entity.AuthUserBO;
 import com.xyclub.auth.domain.service.AuthUserDomainService;
+import com.xyclub.auth.entity.AuthUserDTO;
+import com.xyclub.auth.entity.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -95,7 +95,7 @@ public class UserController {
         try {
             log.info("UserController.logOut.userName:{}", userName);
             Preconditions.checkArgument(!StringUtils.isBlank(userName), "用户名不能为空");
-            StpUtil.  logout(userName);
+            StpUtil.logout(userName);
             return Result.ok();
         } catch (Exception e) {
             log.error("UserController.logOut.error:{}", e.getMessage(), e);

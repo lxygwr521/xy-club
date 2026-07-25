@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RefreshScope
 public class StorageConfig {
-
+  //从nacos中读取
     @Value("${storage.service.type}")
     private String storageType;
 

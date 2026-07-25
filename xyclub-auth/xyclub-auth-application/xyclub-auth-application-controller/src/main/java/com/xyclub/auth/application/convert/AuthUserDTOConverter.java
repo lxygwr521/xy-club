@@ -1,7 +1,7 @@
 package com.xyclub.auth.application.convert;
 
-import com.xyclub.auth.application.dto.AuthUserDTO;
 import com.xyclub.auth.domain.entity.AuthUserBO;
+import com.xyclub.auth.entity.AuthUserDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

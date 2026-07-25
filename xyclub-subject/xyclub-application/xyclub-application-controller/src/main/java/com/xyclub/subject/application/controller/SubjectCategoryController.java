@@ -7,6 +7,7 @@ import com.xyclub.subject.application.convert.SubjectCategoryDTOConverter;
 import com.xyclub.subject.application.convert.SubjectLabelDTOConverter;
 import com.xyclub.subject.application.dto.SubjectCategoryDTO;
 import com.xyclub.subject.application.dto.SubjectLabelDTO;
+import com.xyclub.subject.application.util.LoginUtil;
 import com.xyclub.subject.common.entity.Result;
 import com.xyclub.subject.domain.entity.SubjectCategoryBO;
 import com.xyclub.subject.domain.service.SubjectCategoryDomainService;
@@ -59,7 +60,8 @@ public class SubjectCategoryController {
     }
 
     /**
-     *  根据分类查询二级分类
+     * 根据分类查询二级分类
+     *
      * @param subjectCategoryDTO
      * @return
      */
@@ -67,15 +69,15 @@ public class SubjectCategoryController {
     public Result<List<SubjectCategoryDTO>> queryCategoryByPrimary(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
         try {
             if (log.isInfoEnabled()) {
-                log.info("SubjectCategoryController.queryCategoryByPrimary.dto:{}"
-                        , JSON.toJSONString(subjectCategoryDTO));
+                log.info("SubjectCategoryController.queryCategoryByPrimary.dto:{}",
+                        JSON.toJSONString(subjectCategoryDTO));
             }
             Preconditions.checkNotNull(subjectCategoryDTO.getParentId(), "分类id不能为空");
-            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE.
-                    convertDtoToCategoryBO(subjectCategoryDTO);
+            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
+                    .convertDtoToCategoryBO(subjectCategoryDTO);
             List<SubjectCategoryBO> subjectCategoryBOList = subjectCategoryDomainService.queryCategory(subjectCategoryBO);
-            List<SubjectCategoryDTO> subjectCategoryDTOList = SubjectCategoryDTOConverter.INSTANCE.
-                    convertBoToCategoryDTOList(subjectCategoryBOList);
+            List<SubjectCategoryDTO> subjectCategoryDTOList = SubjectCategoryDTOConverter.INSTANCE
+                    .convertBoToCategoryDTOList(subjectCategoryBOList);
             return Result.ok(subjectCategoryDTOList);
         } catch (Exception e) {
             log.error("SubjectCategoryController.queryPrimaryCategory.error:{}", e.getMessage(), e);
@@ -85,6 +87,7 @@ public class SubjectCategoryController {
 
     /**
      * 更新分类
+     *
      * @param subjectCategoryDTO
      * @return
      */
@@ -94,24 +97,21 @@ public class SubjectCategoryController {
             if (log.isInfoEnabled()) {
                 log.info("SubjectCategoryController.update.dto:{}", JSON.toJSONString(subjectCategoryDTO));
             }
-            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE.
-                    convertDtoToCategoryBO(subjectCategoryDTO);
+            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
+                    .convertDtoToCategoryBO(subjectCategoryDTO);
             Boolean result = subjectCategoryDomainService.update(subjectCategoryBO);
             return Result.ok(result);
         } catch (Exception e) {
             log.error("SubjectCategoryController.update.error:{}", e.getMessage(), e);
             return Result.fail("更新分类失败");
         }
-
     }
 
     /**
-     * 删除分类
+     * 查询分类及标签（一次性聚合，二级分类 + 标签）
+     *
      * @param subjectCategoryDTO
      * @return
-     */
-    /**
-     * 查询分类及标签（一次性聚合，二级分类 + 标签）
      */
     @PostMapping("/queryCategoryAndLabel")
     public Result<List<SubjectCategoryDTO>> queryCategoryAndLabel(@RequestBody SubjectCategoryDTO subjectCategoryDTO) {
@@ -120,6 +120,9 @@ public class SubjectCategoryController {
                 log.info("SubjectCategoryController.queryCategoryAndLabel.dto:{}",
                         JSON.toJSONString(subjectCategoryDTO));
             }
+            // Login id is supplied by gateway and restored by LoginInterceptor.
+            String loginId = LoginUtil.getLoginId();
+            log.info("SubjectCategoryController.queryCategoryAndLabel.loginId:{}", loginId);
             Preconditions.checkNotNull(subjectCategoryDTO.getId(), "分类id不能为空");
             SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
                     .convertDtoToCategoryBO(subjectCategoryDTO);
@@ -148,14 +151,13 @@ public class SubjectCategoryController {
             if (log.isInfoEnabled()) {
                 log.info("SubjectCategoryController.delete.dto:{}", JSON.toJSONString(subjectCategoryDTO));
             }
-            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE.
-                    convertDtoToCategoryBO(subjectCategoryDTO);
+            SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
+                    .convertDtoToCategoryBO(subjectCategoryDTO);
             Boolean result = subjectCategoryDomainService.delete(subjectCategoryBO);
             return Result.ok(result);
         } catch (Exception e) {
             log.error("SubjectCategoryController.delete.error:{}", e.getMessage(), e);
             return Result.fail("删除分类失败");
         }
-
     }
 }
