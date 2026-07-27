@@ -32,3 +32,9 @@ publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAILawJVkn5U/pXU5FuNzW4uTynYGy87hA5tUC
 
 logging:
   config: classpath:log4j2-spring.xml
+
+es:
+  cluster:
+    esConfigs:
+      - name: 3b0d8be29ddf
+        nodes: 182.92.176.188:9200

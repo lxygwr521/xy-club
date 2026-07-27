@@ -5,3 +5,4 @@ com\xyclub\subject\common\entity\PageResult.class
 com\xyclub\subject\common\enums\SubjectInfoTypeEnum.class
 com\xyclub\subject\common\CategoryTypeEnum.class
 com\xyclub\subject\common\enums\IsDeletedFlagEnum.class
+com\xyclub\subject\common\util\IdWorkerUtil.class
