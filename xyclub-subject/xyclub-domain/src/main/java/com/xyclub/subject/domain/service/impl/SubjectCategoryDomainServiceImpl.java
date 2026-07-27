@@ -6,6 +6,7 @@ import com.xyclub.subject.domain.convert.SubjectCategoryConverter;
 import com.xyclub.subject.domain.entity.SubjectCategoryBO;
 import com.xyclub.subject.domain.entity.SubjectLabelBO;
 import com.xyclub.subject.domain.service.SubjectCategoryDomainService;
+import com.xyclub.subject.domain.util.CacheUtil;
 import com.xyclub.subject.infra.basic.entity.SubjectCategory;
 import com.xyclub.subject.infra.basic.entity.SubjectLabel;
 import com.xyclub.subject.infra.basic.entity.SubjectMapping;
@@ -40,6 +41,9 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
     @Resource
     private ThreadPoolExecutor labelThreadPool;
+
+    @Resource
+    private CacheUtil<String, SubjectCategoryBO> cacheUtil;
 
     @Override
     public void add(SubjectCategoryBO subjectCategoryBO) {
@@ -83,12 +87,23 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
     }
 
     /**
-     * 查询一级分类下的二级分类，并使用 CompletableFuture 并发补充标签列表。
+     * 查询一级分类下的二级分类及标签，先读本地缓存，未命中时再执行聚合查询。
+     * 为什么要缓存：因为需要先查二级分类，然后再遍历二级分类查对应的标签并组装结果，链路较重。
      */
     @Override
     public List<SubjectCategoryBO> queryCategoryAndLabel(SubjectCategoryBO subjectCategoryBO) {
+        Long categoryId = subjectCategoryBO.getId();
+        String cacheKey = "categoryAndLabel." + categoryId;
+        //这里的key实际没用到，对应调用时传入的cacheKey
+        return cacheUtil.getResult(cacheKey, SubjectCategoryBO.class, key -> getSubjectCategoryBOS(categoryId));
+    }
+
+    /**
+     * 查询并组装分类标签聚合数据，供缓存未命中时加载。
+     */
+    private List<SubjectCategoryBO> getSubjectCategoryBOS(Long categoryId) {
         SubjectCategory subjectCategory = new SubjectCategory();
-        subjectCategory.setParentId(subjectCategoryBO.getId());
+        subjectCategory.setParentId(categoryId);
         subjectCategory.setIsDeleted(IsDeletedFlagEnum.UN_DELETED.getCode());
         List<SubjectCategory> subjectCategoryList = subjectCategoryService.queryCategory(subjectCategory);
         if (log.isInfoEnabled()) {

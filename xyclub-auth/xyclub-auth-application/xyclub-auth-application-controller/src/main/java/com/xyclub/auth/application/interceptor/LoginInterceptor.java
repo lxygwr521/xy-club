@@ -1,6 +1,6 @@
 package com.xyclub.auth.application.interceptor;
 
-import com.xyclub.auth.application.context.LoginContextHolder;
+import com.xyclub.auth.context.LoginContextHolder;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -17,7 +17,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         LoginContextHolder.set(LOGIN_ID_HEADER, request.getHeader(LOGIN_ID_HEADER));
-        String ID = request.getHeader(LOGIN_ID_HEADER);
         return true;
     }
 

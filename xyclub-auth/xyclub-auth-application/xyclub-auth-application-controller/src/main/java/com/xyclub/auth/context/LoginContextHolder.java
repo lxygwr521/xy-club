@@ -1,17 +1,18 @@
-package com.xyclub.auth.application.context;
+package com.xyclub.auth.context;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Stores login data restored from upstream request headers.
+ * Holds login context restored from upstream request headers.
  */
 public class LoginContextHolder {
 
     private static final String LOGIN_ID = "loginId";
     private static final InheritableThreadLocal<Map<String, Object>> THREAD_LOCAL = new InheritableThreadLocal<>();
-     public static void set(String key, Object value) {
+
+    public static void set(String key, Object value) {
         getThreadLocalMap().put(key, value);
     }
 

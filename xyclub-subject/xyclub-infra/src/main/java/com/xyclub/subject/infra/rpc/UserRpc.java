@@ -16,7 +16,7 @@ public class UserRpc {
 
     @Resource
     private UserFeignService userFeignService;
-
+//    根据用户名，调用认证服务（Auth）的方法获取用户的详细信息，并将其转换为当前服务（Subject）内部使用的 UserInfo 对象。
     public UserInfo getUserInfo(String userName) {
         AuthUserDTO authUserDTO = new AuthUserDTO();
         authUserDTO.setUserName(userName);

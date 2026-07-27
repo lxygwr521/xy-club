@@ -7,7 +7,6 @@ import com.xyclub.subject.application.convert.SubjectCategoryDTOConverter;
 import com.xyclub.subject.application.convert.SubjectLabelDTOConverter;
 import com.xyclub.subject.application.dto.SubjectCategoryDTO;
 import com.xyclub.subject.application.dto.SubjectLabelDTO;
-import com.xyclub.subject.application.util.LoginUtil;
 import com.xyclub.subject.common.entity.Result;
 import com.xyclub.subject.domain.entity.SubjectCategoryBO;
 import com.xyclub.subject.domain.service.SubjectCategoryDomainService;
@@ -120,9 +119,6 @@ public class SubjectCategoryController {
                 log.info("SubjectCategoryController.queryCategoryAndLabel.dto:{}",
                         JSON.toJSONString(subjectCategoryDTO));
             }
-            // Login id is supplied by gateway and restored by LoginInterceptor.
-            String loginId = LoginUtil.getLoginId();
-            log.info("SubjectCategoryController.queryCategoryAndLabel.loginId:{}", loginId);
             Preconditions.checkNotNull(subjectCategoryDTO.getId(), "分类id不能为空");
             SubjectCategoryBO subjectCategoryBO = SubjectCategoryDTOConverter.INSTANCE
                     .convertDtoToCategoryBO(subjectCategoryDTO);

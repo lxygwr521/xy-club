@@ -1,1 +1,7 @@
+com\xyclub\subject\common\enums\ResultCodeEnum.class
+com\xyclub\subject\common\entity\Result.class
+com\xyclub\subject\common\entity\PageInfo.class
+com\xyclub\subject\common\entity\PageResult.class
 com\xyclub\subject\common\enums\SubjectInfoTypeEnum.class
+com\xyclub\subject\common\CategoryTypeEnum.class
+com\xyclub\subject\common\enums\IsDeletedFlagEnum.class

@@ -9,6 +9,7 @@ E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\x
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\dao\SubjectBriefDao.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\dao\SubjectInfoDao.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\SubjectLabelService.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\rpc\UserRpc.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectJudge.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\SubjectInfoService.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\SubjectRadioService.java
@@ -28,6 +29,7 @@ E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\x
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\dao\SubjectJudgeDao.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectRadioServiceImpl.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\service\impl\SubjectJudgeServiceImpl.java
+E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\entity\UserInfo.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectInfo.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectMapping.java
 E:\ideacode\javaProjects\xy-club\xyclub-subject\xyclub-infra\src\main\java\com\xyclub\subject\infra\basic\entity\SubjectMultiple.java
