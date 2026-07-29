@@ -3,15 +3,18 @@ package com.xyclub.subject.domain.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.xyclub.subject.common.entity.PageResult;
 import com.xyclub.subject.common.enums.IsDeletedFlagEnum;
+import com.xyclub.subject.common.util.IdWorkerUtil;
 import com.xyclub.subject.domain.convert.SubjectInfoConverter;
 import com.xyclub.subject.domain.entity.SubjectInfoBO;
 import com.xyclub.subject.domain.entity.SubjectOptionBO;
 import com.xyclub.subject.domain.handler.subject.SubjectTypeHandler;
 import com.xyclub.subject.domain.handler.subject.SubjectTypeHandlerFactory;
 import com.xyclub.subject.domain.service.SubjectInfoDomainService;
+import com.xyclub.subject.infra.basic.entity.SubjectInfoEs;
 import com.xyclub.subject.infra.basic.entity.SubjectInfo;
 import com.xyclub.subject.infra.basic.entity.SubjectLabel;
 import com.xyclub.subject.infra.basic.entity.SubjectMapping;
+import com.xyclub.subject.infra.basic.service.SubjectEsService;
 import com.xyclub.subject.infra.basic.service.SubjectInfoService;
 import com.xyclub.subject.infra.basic.service.SubjectLabelService;
 import com.xyclub.subject.infra.basic.service.SubjectMappingService;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +47,9 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
     @Resource
     private SubjectTypeHandlerFactory subjectTypeHandlerFactory;
 
+    @Resource
+    private SubjectEsService subjectEsService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void add(SubjectInfoBO subjectInfoBO) {
@@ -58,8 +65,8 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         List<Integer> categoryIds = subjectInfoBO.getCategoryIds();
         List<Integer> labelIds = subjectInfoBO.getLabelIds();
         List<SubjectMapping> mappingList = new LinkedList<>();
-        categoryIds.forEach(categoryId->{
-            labelIds.forEach(labelId->{
+        categoryIds.forEach(categoryId -> {
+            labelIds.forEach(labelId -> {
                 SubjectMapping subjectMapping = new SubjectMapping();
                 subjectMapping.setSubjectId(subjectInfo.getId());
                 subjectMapping.setCategoryId(Long.valueOf(categoryId));
@@ -70,6 +77,15 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         });
         subjectMappingService.batchInsert(mappingList);
 
+        SubjectInfoEs subjectInfoEs = new SubjectInfoEs();
+        subjectInfoEs.setDocId(new IdWorkerUtil(1, 1, 1).nextId());
+        subjectInfoEs.setSubjectId(subjectInfo.getId());
+        subjectInfoEs.setSubjectAnswer(subjectInfoBO.getSubjectAnswer());
+        subjectInfoEs.setCreateTime(new Date().getTime());
+        subjectInfoEs.setCreateUser("鸡翅");
+        subjectInfoEs.setSubjectName(subjectInfo.getSubjectName());
+        subjectInfoEs.setSubjectType(subjectInfo.getSubjectType());
+        subjectEsService.insert(subjectInfoEs);
     }
 
     /**
@@ -93,7 +109,7 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
                 , subjectInfoBO.getLabelId(), start, subjectInfoBO.getPageSize());
         List<SubjectInfoBO> subjectInfoBOS = SubjectInfoConverter.INSTANCE.convertListInfoToBO(subjectInfoList);
 //        分页查询结果补充题目标签名称回显
-        subjectInfoBOS.forEach(info->{
+        subjectInfoBOS.forEach(info -> {
             SubjectMapping subjectMapping = new SubjectMapping();
             subjectMapping.setSubjectId(info.getId());
             List<SubjectMapping> mappingList = subjectMappingService.queryLabelId(subjectMapping);
@@ -131,6 +147,15 @@ public class SubjectInfoDomainServiceImpl implements SubjectInfoDomainService {
         return bo;
     }
 
+    @Override
+    public PageResult<SubjectInfoEs> getSubjectPageBySearch(SubjectInfoBO subjectInfoBO) {
+        // 领域层只负责组装搜索条件，具体 ES 查询由 infra 层封装。
+        SubjectInfoEs subjectInfoEs = new SubjectInfoEs();
+        subjectInfoEs.setPageNo(subjectInfoBO.getPageNo());
+        subjectInfoEs.setPageSize(subjectInfoBO.getPageSize());
+        subjectInfoEs.setKeyWord(subjectInfoBO.getKeyWord());
+        return subjectEsService.querySubjectList(subjectInfoEs);
+    }
 
 
 }

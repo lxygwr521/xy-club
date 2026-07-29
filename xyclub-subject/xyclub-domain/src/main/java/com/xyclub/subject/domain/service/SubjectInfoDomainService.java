@@ -2,6 +2,7 @@ package com.xyclub.subject.domain.service;
 
 import com.xyclub.subject.common.entity.PageResult;
 import com.xyclub.subject.domain.entity.SubjectInfoBO;
+import com.xyclub.subject.infra.basic.entity.SubjectInfoEs;
 
 /**
  * @author lxy
@@ -24,5 +25,9 @@ public interface SubjectInfoDomainService {
      */
     SubjectInfoBO querySubjectInfo(SubjectInfoBO subjectInfoBO);
 
+    /**
+     * 全文检索
+     */
+    PageResult<SubjectInfoEs> getSubjectPageBySearch(SubjectInfoBO subjectInfoBO);
 
 }

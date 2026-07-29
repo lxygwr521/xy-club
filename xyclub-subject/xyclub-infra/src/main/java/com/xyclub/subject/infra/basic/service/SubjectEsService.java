@@ -1,12 +1,11 @@
 package com.xyclub.subject.infra.basic.service;
 
+import com.xyclub.subject.common.entity.PageResult;
+import com.xyclub.subject.infra.basic.entity.SubjectInfoEs;
+
 public interface SubjectEsService {
 
-    void createIndex();
+    boolean insert(SubjectInfoEs subjectInfoEs);
 
-    void addDoc();
-
-    void find();
-
-    void search();
+    PageResult<SubjectInfoEs> querySubjectList(SubjectInfoEs subjectInfoEs);
 }

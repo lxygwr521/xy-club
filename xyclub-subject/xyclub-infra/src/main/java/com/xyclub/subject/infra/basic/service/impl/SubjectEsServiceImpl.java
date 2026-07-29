@@ -1,69 +1,169 @@
 package com.xyclub.subject.infra.basic.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.xyclub.subject.common.entity.PageResult;
+import com.xyclub.subject.common.enums.SubjectInfoTypeEnum;
+import com.xyclub.subject.infra.basic.entity.EsSubjectFields;
 import com.xyclub.subject.infra.basic.entity.SubjectInfoEs;
-import com.xyclub.subject.infra.basic.esRepo.SubjectEsRepository;
+import com.xyclub.subject.infra.basic.es.EsIndexInfo;
+import com.xyclub.subject.infra.basic.es.EsRestClient;
+import com.xyclub.subject.infra.basic.es.EsSearchRequest;
+import com.xyclub.subject.infra.basic.es.EsSourceData;
 import com.xyclub.subject.infra.basic.service.SubjectEsService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.IndexOperations;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.document.Document;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.apache.commons.collections4.MapUtils;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.common.text.Text;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
 public class SubjectEsServiceImpl implements SubjectEsService {
 
-    @Resource
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
-
-    @Resource
-    private SubjectEsRepository subjectEsRepository;
-
     @Override
-    public void createIndex() {
-        // 通过实体类上的 @Document/@Field 元数据定位索引并生成映射。
-        IndexOperations indexOperations = elasticsearchRestTemplate.indexOps(SubjectInfoEs.class);
-        indexOperations.create();
-        Document mapping = indexOperations.createMapping(SubjectInfoEs.class);
-        indexOperations.putMapping(mapping);
+    public boolean insert(SubjectInfoEs subjectInfoEs) {
+        EsSourceData esSourceData = new EsSourceData();
+        Map<String, Object> data = convert2EsSourceData(subjectInfoEs);
+        esSourceData.setDocId(subjectInfoEs.getDocId().toString());
+        esSourceData.setData(data);
+        return EsRestClient.insertDoc(getEsIndexInfo(), esSourceData);
+    }
+
+    private Map<String, Object> convert2EsSourceData(SubjectInfoEs subjectInfoEs) {
+        Map<String, Object> data = new HashMap<>();
+        data.put(EsSubjectFields.SUBJECT_ID, subjectInfoEs.getSubjectId());
+        data.put(EsSubjectFields.DOC_ID, subjectInfoEs.getDocId());
+        data.put(EsSubjectFields.SUBJECT_NAME, subjectInfoEs.getSubjectName());
+        data.put(EsSubjectFields.SUBJECT_ANSWER, subjectInfoEs.getSubjectAnswer());
+        data.put(EsSubjectFields.SUBJECT_TYPE, subjectInfoEs.getSubjectType());
+        data.put(EsSubjectFields.CREATE_USER, subjectInfoEs.getCreateUser());
+        data.put(EsSubjectFields.CREATE_TIME, subjectInfoEs.getCreateTime());
+        return data;
     }
 
     @Override
-    public void addDoc() {
-        List<SubjectInfoEs> list = new ArrayList<>();
-        list.add(new SubjectInfoEs(1L, "redis是什么", "redis是一个缓存", "鸡翅", new Date()));
-        list.add(new SubjectInfoEs(2L, "mysql是什么", "mysql是数据库", "鸡翅", new Date()));
-        subjectEsRepository.saveAll(list);
-    }
+    public PageResult<SubjectInfoEs> querySubjectList(SubjectInfoEs req) {
+        PageResult<SubjectInfoEs> pageResult = new PageResult<>();
+        // 将业务查询条件转换成 ES 查询请求，统一复用 EsRestClient 执行。
+        EsSearchRequest esSearchRequest = createSearchListQuery(req);
+        SearchResponse searchResponse = EsRestClient.searchWithTermQuery(getEsIndexInfo(), esSearchRequest);
 
-    @Override
-    public void find() {
-        Iterable<SubjectInfoEs> all = subjectEsRepository.findAll();
-        for (SubjectInfoEs subjectInfoEs : all) {
-            log.info("subjectInfoEs:{}", JSON.toJSONString(subjectInfoEs));
+        List<SubjectInfoEs> subjectInfoEsList = new LinkedList<>();
+        if (searchResponse == null || searchResponse.getHits() == null
+                || searchResponse.getHits().getHits() == null) {
+            pageResult.setPageNo(req.getPageNo());
+            pageResult.setPageSize(req.getPageSize());
+            pageResult.setRecords(subjectInfoEsList);
+            pageResult.setTotal(0);
+            return pageResult;
         }
+
+        SearchHits searchHits = searchResponse.getHits();
+        SearchHit[] hits = searchHits.getHits();
+        for (SearchHit hit : hits) {
+            SubjectInfoEs subjectInfoEs = convertResult(hit);
+            if (Objects.nonNull(subjectInfoEs)) {
+                subjectInfoEsList.add(subjectInfoEs);
+            }
+        }
+        pageResult.setPageNo(req.getPageNo());
+        pageResult.setPageSize(req.getPageSize());
+        pageResult.setRecords(subjectInfoEsList);
+        pageResult.setTotal(Long.valueOf(searchHits.getTotalHits().value).intValue());
+        return pageResult;
     }
 
-    @Override
-    public void search() {
-        // 使用 Template 执行自定义 DSL 查询，便于拿到命中详情和得分等信息。
-        NativeSearchQuery nativeSearchQuery = new NativeSearchQueryBuilder()
-                .withQuery(matchQuery("subjectName", "redis"))
-                .build();
-        SearchHits<SubjectInfoEs> search = elasticsearchRestTemplate.search(nativeSearchQuery, SubjectInfoEs.class);
-        List<SearchHit<SubjectInfoEs>> searchHits = search.getSearchHits();
-        log.info("searchHits:{}", JSON.toJSONString(searchHits));
+    private SubjectInfoEs convertResult(SearchHit hit) {
+        Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+        if (CollectionUtils.isEmpty(sourceAsMap)) {
+            return null;
+        }
+        SubjectInfoEs result = new SubjectInfoEs();
+        result.setSubjectId(MapUtils.getLong(sourceAsMap, EsSubjectFields.SUBJECT_ID));
+        result.setSubjectName(MapUtils.getString(sourceAsMap, EsSubjectFields.SUBJECT_NAME));
+        result.setSubjectAnswer(MapUtils.getString(sourceAsMap, EsSubjectFields.SUBJECT_ANSWER));
+        result.setDocId(MapUtils.getLong(sourceAsMap, EsSubjectFields.DOC_ID));
+        result.setSubjectType(MapUtils.getInteger(sourceAsMap, EsSubjectFields.SUBJECT_TYPE));
+        result.setScore(new BigDecimal(String.valueOf(hit.getScore())).multiply(new BigDecimal("100.00")
+                .setScale(2, RoundingMode.HALF_UP)));
+
+        Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+        // 如果 ES 返回高亮片段，优先用高亮内容覆盖原字段。
+        HighlightField subjectNameField = highlightFields.get(EsSubjectFields.SUBJECT_NAME);
+        if (Objects.nonNull(subjectNameField)) {
+            Text[] fragments = subjectNameField.getFragments();
+            StringBuilder subjectNameBuilder = new StringBuilder();
+            for (Text fragment : fragments) {
+                subjectNameBuilder.append(fragment);
+            }
+            result.setSubjectName(subjectNameBuilder.toString());
+        }
+
+        HighlightField subjectAnswerField = highlightFields.get(EsSubjectFields.SUBJECT_ANSWER);
+        if (Objects.nonNull(subjectAnswerField)) {
+            Text[] fragments = subjectAnswerField.getFragments();
+            StringBuilder subjectAnswerBuilder = new StringBuilder();
+            for (Text fragment : fragments) {
+                subjectAnswerBuilder.append(fragment);
+            }
+            result.setSubjectAnswer(subjectAnswerBuilder.toString());
+        }
+
+        return result;
+    }
+
+    private EsSearchRequest createSearchListQuery(SubjectInfoEs req) {
+        EsSearchRequest esSearchRequest = new EsSearchRequest();
+        BoolQueryBuilder bq = new BoolQueryBuilder();
+        // 题目名称匹配权重更高，命中名称的结果会优先展示。
+        MatchQueryBuilder subjectNameQueryBuilder =
+                QueryBuilders.matchQuery(EsSubjectFields.SUBJECT_NAME, req.getKeyWord());
+
+        bq.should(subjectNameQueryBuilder);
+        subjectNameQueryBuilder.boost(2);
+
+        MatchQueryBuilder subjectAnswerQueryBuilder =
+                QueryBuilders.matchQuery(EsSubjectFields.SUBJECT_ANSWER, req.getKeyWord());
+        bq.should(subjectAnswerQueryBuilder);
+
+        MatchQueryBuilder subjectTypeQueryBuilder =
+                QueryBuilders.matchQuery(EsSubjectFields.SUBJECT_TYPE, SubjectInfoTypeEnum.BRIEF.getCode());
+        bq.must(subjectTypeQueryBuilder);
+        // 名称和答案至少命中一个，同时必须满足题目类型过滤。
+        bq.minimumShouldMatch(1);
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder().field("*").requireFieldMatch(false);
+        highlightBuilder.preTags("<span style = \"color:red\">");
+        highlightBuilder.postTags("</span>");
+
+        esSearchRequest.setBq(bq);
+        esSearchRequest.setHighlightBuilder(highlightBuilder);
+        esSearchRequest.setFields(EsSubjectFields.FIELD_QUERY);
+        esSearchRequest.setFrom((req.getPageNo() - 1) * req.getPageSize());
+        esSearchRequest.setSize(req.getPageSize());
+        esSearchRequest.setNeedScroll(false);
+        return esSearchRequest;
+    }
+
+    private EsIndexInfo getEsIndexInfo() {
+        EsIndexInfo esIndexInfo = new EsIndexInfo();
+        esIndexInfo.setClusterName("73438a827b55");
+        esIndexInfo.setIndexName("subject_index");
+        return esIndexInfo;
     }
 }

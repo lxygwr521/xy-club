@@ -3,6 +3,7 @@ com\xyclub\subject\infra\basic\dao\SubjectBriefDao.class
 com\xyclub\subject\infra\basic\entity\SubjectCategory.class
 com\xyclub\subject\infra\basic\es\EsConfigProperties.class
 com\xyclub\subject\infra\basic\service\impl\SubjectRadioServiceImpl.class
+com\xyclub\subject\infra\basic\entity\EsSubjectFields.class
 com\xyclub\subject\infra\entity\UserInfo.class
 com\xyclub\subject\infra\basic\service\impl\SubjectInfoServiceImpl.class
 com\xyclub\subject\infra\basic\service\SubjectEsService.class
@@ -40,7 +41,6 @@ com\xyclub\subject\infra\basic\service\SubjectBriefService.class
 com\xyclub\subject\infra\basic\service\SubjectJudgeService.class
 com\xyclub\subject\infra\basic\dao\SubjectRadioDao.class
 com\xyclub\subject\infra\basic\entity\SubjectBrief.class
-com\xyclub\subject\infra\basic\esRepo\SubjectEsRepository.class
 com\xyclub\subject\infra\basic\dao\SubjectCategoryDao.class
 com\xyclub\subject\infra\basic\service\impl\SubjectLabelServiceImpl.class
 com\xyclub\subject\infra\basic\entity\SubjectMapping.class

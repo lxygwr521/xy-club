@@ -6,7 +6,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-27T17:34:41+0800",
+    date = "2026-07-29T12:57:09+0800",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.15.1 (Oracle Corporation)"
 )
 public class BriefSubjectConverterImpl implements BriefSubjectConverter {

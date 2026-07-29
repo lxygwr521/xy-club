@@ -10,7 +10,7 @@ import javax.annotation.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-27T17:34:42+0800",
+    date = "2026-07-29T12:57:11+0800",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.15.1 (Oracle Corporation)"
 )
 public class SubjectInfoDTOConverterImpl implements SubjectInfoDTOConverter {
@@ -48,6 +48,7 @@ public class SubjectInfoDTOConverterImpl implements SubjectInfoDTOConverter {
         subjectInfoBO.setOptionList( subjectAnswerDTOListToSubjectAnswerBOList( subjectInfoDTO.getOptionList() ) );
         subjectInfoBO.setCategoryId( subjectInfoDTO.getCategoryId() );
         subjectInfoBO.setLabelId( subjectInfoDTO.getLabelId() );
+        subjectInfoBO.setKeyWord( subjectInfoDTO.getKeyWord() );
 
         return subjectInfoBO;
     }
@@ -85,6 +86,7 @@ public class SubjectInfoDTOConverterImpl implements SubjectInfoDTOConverter {
         subjectInfoDTO.setOptionList( subjectAnswerBOListToSubjectAnswerDTOList( subjectInfoBO.getOptionList() ) );
         subjectInfoDTO.setCategoryId( subjectInfoBO.getCategoryId() );
         subjectInfoDTO.setLabelId( subjectInfoBO.getLabelId() );
+        subjectInfoDTO.setKeyWord( subjectInfoBO.getKeyWord() );
 
         return subjectInfoDTO;
     }
