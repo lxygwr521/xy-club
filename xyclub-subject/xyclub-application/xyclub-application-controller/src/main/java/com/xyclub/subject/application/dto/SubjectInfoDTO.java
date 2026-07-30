@@ -76,4 +76,20 @@ public class SubjectInfoDTO extends PageInfo implements Serializable {
      */
     private String keyWord;
 
+    private String createUser;
+
+    private String createUserAvatar;
+
+    private Integer subjectCount;
+
+    /**
+     * 是否被当前用户点赞。
+     */
+    private Boolean liked;
+
+    /**
+     * 当前题目点赞数量。
+     */
+    private Integer likedCount;
+
 }

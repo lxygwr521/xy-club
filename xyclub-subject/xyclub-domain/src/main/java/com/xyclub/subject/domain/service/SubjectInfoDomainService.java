@@ -4,6 +4,8 @@ import com.xyclub.subject.common.entity.PageResult;
 import com.xyclub.subject.domain.entity.SubjectInfoBO;
 import com.xyclub.subject.infra.basic.entity.SubjectInfoEs;
 
+import java.util.List;
+
 /**
  * @author lxy
  * @date 2026/07/14 14:24
@@ -29,5 +31,7 @@ public interface SubjectInfoDomainService {
      * 全文检索
      */
     PageResult<SubjectInfoEs> getSubjectPageBySearch(SubjectInfoBO subjectInfoBO);
+
+    List<SubjectInfoBO> getContributeList();
 
 }

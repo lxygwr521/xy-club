@@ -58,4 +58,6 @@ public class SubjectInfo {
 
     private Integer isDeleted;
 
+    private Integer subjectCount;
+
 }

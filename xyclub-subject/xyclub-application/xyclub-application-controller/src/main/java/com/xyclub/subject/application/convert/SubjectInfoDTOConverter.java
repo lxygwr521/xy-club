@@ -5,6 +5,8 @@ import com.xyclub.subject.domain.entity.SubjectInfoBO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface SubjectInfoDTOConverter {
 
@@ -13,4 +15,6 @@ public interface SubjectInfoDTOConverter {
     SubjectInfoBO convertDTOToBO(SubjectInfoDTO subjectInfoDTO);
 
     SubjectInfoDTO convertBOToDTO(SubjectInfoBO subjectInfoBO);
+
+    List<SubjectInfoDTO> convertBOToDTOList(List<SubjectInfoBO> subjectInfoBOList);
 }
