@@ -1,6 +1,6 @@
-package com.xyclub.subject.application.util;
+package com.xyclub.subject.common.util;
 
-import com.xyclub.subject.application.context.LoginContextHolder;
+import com.xyclub.subject.common.context.LoginContextHolder;
 
 /**
  * Reads login data from request context.

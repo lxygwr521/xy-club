@@ -1,8 +1,8 @@
-package com.xyclub.subject.application.context;
+package com.xyclub.subject.common.context;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stores login data for the current request thread.
@@ -28,10 +28,10 @@ public class LoginContextHolder {
         THREAD_LOCAL.remove();
     }
 
-    private static Map<String, Object> getThreadLocalMap() {
+    public static Map<String, Object> getThreadLocalMap() {
         Map<String, Object> map = THREAD_LOCAL.get();
         if (Objects.isNull(map)) {
-            map = new HashMap<>();
+            map = new ConcurrentHashMap<>();
             THREAD_LOCAL.set(map);
         }
         return map;

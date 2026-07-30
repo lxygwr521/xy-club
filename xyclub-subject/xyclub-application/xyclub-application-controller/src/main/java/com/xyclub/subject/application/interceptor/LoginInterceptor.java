@@ -1,7 +1,8 @@
 package com.xyclub.subject.application.interceptor;
 
-import com.xyclub.subject.application.context.LoginContextHolder;
+import com.xyclub.subject.common.context.LoginContextHolder;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        LoginContextHolder.set(LOGIN_ID_HEADER, request.getHeader(LOGIN_ID_HEADER));
+        String loginId = request.getHeader(LOGIN_ID_HEADER);
+        if (StringUtils.hasText(loginId)) {
+            LoginContextHolder.set(LOGIN_ID_HEADER, loginId);
+        }
         return true;
     }
 
