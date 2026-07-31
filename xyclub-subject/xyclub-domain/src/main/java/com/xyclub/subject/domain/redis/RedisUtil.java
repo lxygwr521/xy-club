@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 @Component
 @Slf4j
 public class RedisUtil {
-
+//    RedisTemplate 是 Spring Data Redis 提供的一个高度封装的模板类，用于在 Java 应用中轻松地操作 Redis 数据库。
     @Resource
     private RedisTemplate redisTemplate;
 
@@ -50,6 +50,7 @@ public class RedisUtil {
 
     /**
      * 写入字符串缓存，不设置过期时间。
+     * opsForValue()是操作字符串（String）类型数据的接口
      */
     public void set(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
@@ -161,16 +162,39 @@ public class RedisUtil {
         redisTemplate.opsForValue().increment(key, count);
     }
 
+    /**
+     * 获取 Hash 结构中所有字段值，并在读取后逐条删除该 Hash 中的所有字段。
+     * 该操作通过 SCAN 命令遍历 Hash，避免一次性加载全部字段到内存，
+     * 适合处理大 Key 场景下的数据迁移或过期清理任务。
+     *
+     * @param key Redis Hash 的键名
+     * @return Map<Object, Object></Object,> 包含该 Hash 中所有字段和值的 Map 副本，键为字段名，值为字段值
+     */
     public Map<Object, Object> getHashAndDelete(String key) {
+        // 1. 创建一个普通的 HashMap 用于存放结果，确保返回的数据与 Redis 中的数据隔离
         Map<Object, Object> map = new HashMap<>();
-        Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(key, ScanOptions.NONE);
+
+        // 2. 获取一个游标（Cursor），用于迭代 Redis 中的 Hash 数据
+        // opsForHash()：获取操作 Hash 的入口
+        // scan(key, ScanOptions.NONE)：从指定的 key 开始扫描，ScanOptions.NONE 表示无特殊限制，会扫描全部字段
+        //Map.Entry	Map 中的一个条目，包含一个 Key 和一个 Value
+        Cursor<Map.Entry<Object, Object>> cursor =
+                redisTemplate.opsForHash().scan(key, ScanOptions.NONE);
+
+        // 3. 遍历 Hash 中的每一个字段-值对
         while (cursor.hasNext()) {
+            // 获取当前游标指向的 Entry（包含 field 和 value）
             Map.Entry<Object, Object> entry = cursor.next();
-            Object hashKey = entry.getKey();
-            Object value = entry.getValue();
-            map.put(hashKey, value);
-            redisTemplate.opsForHash().delete(key, hashKey);
+
+            // 4. 存入结果 Map 中
+            map.put(entry.getKey(), entry.getValue());
+
+            // 5. 从 Redis 中删除当前这个字段（field）,保证redis和mysql中数据一致性。
+            // 注意：这是逐条删除，每次只删除一个 field
+            redisTemplate.opsForHash().delete(key, entry.getKey());
         }
+
+        // 6. 返回已保存的 Map
         return map;
     }
 

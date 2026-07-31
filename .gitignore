@@ -20,6 +20,9 @@ target/
 *.tar.gz
 *.rar
 
+# IDE files
+.idea/
+
 # Documentation files
 *.md
 docs/
