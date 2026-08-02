@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+//ES 文档实体	映射 ES 索引中的字段（subjectId, subjectName, subjectAnswer 等）
 @Data
 public class SubjectInfoEs extends PageInfo implements Serializable {
 

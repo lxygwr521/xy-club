@@ -1,5 +1,6 @@
 package com.xyclub.subject.domain.entity;
 
+import com.xyclub.subject.common.entity.PageInfo;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.util.Date;
  * 题目点赞 BO。
  */
 @Data
-public class SubjectLikedBO implements Serializable {
+public class SubjectLikedBO extends PageInfo implements Serializable {
 
     /**
      * 主键。

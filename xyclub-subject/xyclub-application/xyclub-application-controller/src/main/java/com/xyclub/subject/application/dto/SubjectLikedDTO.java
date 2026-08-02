@@ -1,5 +1,6 @@
 package com.xyclub.subject.application.dto;
 
+import com.xyclub.subject.common.entity.PageInfo;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.util.Date;
  * 题目点赞 DTO。
  */
 @Data
-public class SubjectLikedDTO implements Serializable {
+public class SubjectLikedDTO extends PageInfo implements Serializable {
 
     /**
      * 主键。

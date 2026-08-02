@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+//Es索引类
 @Data
 public class EsIndexInfo implements Serializable {
 

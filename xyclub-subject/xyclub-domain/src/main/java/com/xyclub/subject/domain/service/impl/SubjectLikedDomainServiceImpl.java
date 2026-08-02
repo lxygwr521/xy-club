@@ -1,8 +1,10 @@
 package com.xyclub.subject.domain.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.xyclub.subject.common.entity.PageResult;
 import com.xyclub.subject.common.enums.IsDeletedFlagEnum;
 import com.xyclub.subject.common.enums.SubjectLikedStatusEnum;
+import com.xyclub.subject.common.util.LoginUtil;
 import com.xyclub.subject.domain.convert.SubjectLikedBOConverter;
 import com.xyclub.subject.domain.entity.SubjectLikedBO;
 import com.xyclub.subject.domain.redis.RedisUtil;
@@ -133,9 +135,35 @@ public class SubjectLikedDomainServiceImpl implements SubjectLikedDomainService 
             subjectLiked.setSubjectId(Long.valueOf(subjectId));
             subjectLiked.setLikeUserId(likedUser);
             subjectLiked.setStatus(Integer.valueOf(val.toString()));
+            subjectLiked.setIsDeleted(IsDeletedFlagEnum.UN_DELETED.getCode());
             subjectLikedList.add(subjectLiked);
         });
         subjectLikedService.batchInsert(subjectLikedList);
+    }
+
+    /**
+     * 分页查询当前登录用户已点赞的题目。
+     */
+    @Override
+    public PageResult<SubjectLikedBO> getSubjectLikedPage(SubjectLikedBO subjectLikedBO) {
+        PageResult<SubjectLikedBO> pageResult = new PageResult<>();
+        pageResult.setPageNo(subjectLikedBO.getPageNo());
+        pageResult.setPageSize(subjectLikedBO.getPageSize());
+        int start = (subjectLikedBO.getPageNo() - 1) * subjectLikedBO.getPageSize();
+
+        SubjectLiked subjectLiked = SubjectLikedBOConverter.INSTANCE.convertBOToEntity(subjectLikedBO);
+        subjectLiked.setLikeUserId(LoginUtil.getLoginId());
+        int count = subjectLikedService.countByCondition(subjectLiked);
+        if (count == 0) {
+            return pageResult;
+        }
+
+        List<SubjectLiked> subjectLikedList = subjectLikedService.queryPage(
+                subjectLiked, start, subjectLikedBO.getPageSize());
+        List<SubjectLikedBO> boList = SubjectLikedBOConverter.INSTANCE.convertListInfoToBO(subjectLikedList);
+        pageResult.setRecords(boList);
+        pageResult.setTotal(count);
+        return pageResult;
     }
 
 }

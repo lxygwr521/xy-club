@@ -1,5 +1,6 @@
 package com.xyclub.subject.domain.service;
 
+import com.xyclub.subject.common.entity.PageResult;
 import com.xyclub.subject.domain.entity.SubjectLikedBO;
 
 /**
@@ -36,5 +37,10 @@ public interface SubjectLikedDomainService {
      * 同步点赞数据。
      */
     void syncLiked();
+
+    /**
+     * 分页查询当前用户点赞过的题目。
+     */
+    PageResult<SubjectLikedBO> getSubjectLikedPage(SubjectLikedBO subjectLikedBO);
 
 }

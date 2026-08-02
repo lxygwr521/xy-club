@@ -113,18 +113,32 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
 
         List<SubjectCategoryBO> categoryBOList = SubjectCategoryConverter.INSTANCE.convertBoToCategory(subjectCategoryList);
         Map<Long, List<SubjectLabelBO>> labelMap = new HashMap<>();
-        List<CompletableFuture<Map<Long, List<SubjectLabelBO>>>> futureList = categoryBOList.stream()
-                .map(category -> CompletableFuture.supplyAsync(() -> getLabelBOList(category), labelThreadPool))
-                .collect(Collectors.toList());
+        // 1. 创建一个 List，用于存放每个分类查询任务返回的 CompletableFuture
+        //    每个 CompletableFuture 的返回类型是 Map<Long, List<SubjectLabelBO>>
+        //    - Key: 分类 ID（categoryId）
+        //    - Value: 该分类下的标签列表
+        List<CompletableFuture<Map<Long, List<SubjectLabelBO>>>> futureList =
+                categoryBOList.stream()  // 遍历所有分类
+                        .map(category -> CompletableFuture.supplyAsync(
+                                () -> getLabelBOList(category),  // 异步执行查询方法
+                                labelThreadPool                  // 使用自定义线程池
+                        ))
+                        .collect(Collectors.toList());      // 收集所有异步任务
 
-        // 汇总各异步任务结果，单个分类查询失败不影响其它分类回填。
+        // 2. 遍历所有异步任务，获取执行结果
+        //    使用 forEach 而非 join() 或 allOf()，确保单个任务失败不影响其他任务
         futureList.forEach(future -> {
             try {
+                // 阻塞等待当前异步任务执行完成，获取结果
                 Map<Long, List<SubjectLabelBO>> resultMap = future.get();
+
+                // 如果查询结果不为空，汇总到最终的 labelMap 中
                 if (!CollectionUtils.isEmpty(resultMap)) {
                     labelMap.putAll(resultMap);
                 }
             } catch (Exception e) {
+                // 单个分类查询失败时，仅记录错误日志，不影响其他分类的查询结果
+                // 保证接口整体可用性（部分成功）
                 log.error("query category label failed", e);
             }
         });

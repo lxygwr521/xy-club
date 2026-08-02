@@ -1,5 +1,6 @@
 package com.xyclub.subject.infra.basic.entity;
 
+//ES 字段常量	定义所有 ES 字段名常量和查询字段数组
 public class EsSubjectFields {
 
     public static final String DOC_ID = "doc_id";

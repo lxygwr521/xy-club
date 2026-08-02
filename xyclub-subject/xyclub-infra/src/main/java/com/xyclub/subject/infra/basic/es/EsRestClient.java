@@ -102,6 +102,7 @@ public class EsRestClient {
 
     /**
      * 新增或覆盖指定 ID 的文档。
+     * IndexRequest 是 Elasticsearch Java 客户端（RestHighLevelClient）中用于创建或更新文档的请求对象。
      */
     public static boolean insertDoc(EsIndexInfo esIndexInfo, EsSourceData esSourceData) {
         try {
@@ -135,6 +136,8 @@ public class EsRestClient {
 
     /**
      * 批量局部更新文档，跳过没有 docId 的数据。
+     * BulkRequest 就是一个“批处理容器”，你可以把多个 IndexRequest（新增/更新）、
+     * UpdateRequest（部分更新）、DeleteRequest（删除）装在一起，然后一次性发送给 Elasticsearch
      */
     public static boolean batchUpdateDoc(EsIndexInfo esIndexInfo, List<EsSourceData> esSourceDataList) {
         try {
