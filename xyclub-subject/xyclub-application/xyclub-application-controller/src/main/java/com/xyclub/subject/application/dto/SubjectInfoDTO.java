@@ -92,4 +92,14 @@ public class SubjectInfoDTO extends PageInfo implements Serializable {
      */
     private Integer likedCount;
 
+    /**
+     * 下一题 id。
+     */
+    private Long nextSubjectId;
+
+    /**
+     * 上一题 id。
+     */
+    private Long lastSubjectId;
+
 }

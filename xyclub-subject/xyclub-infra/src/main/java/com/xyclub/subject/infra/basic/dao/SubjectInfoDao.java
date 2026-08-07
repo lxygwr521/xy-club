@@ -86,4 +86,9 @@ public interface SubjectInfoDao {
 
     List<SubjectInfo> getContributeCount();
 
+    Long querySubjectIdCursor(@Param("subjectId") Long subjectId,
+                              @Param("categoryId") Long categoryId,
+                              @Param("labelId") Long labelId,
+                              @Param("cursor") int cursor);
+
 }

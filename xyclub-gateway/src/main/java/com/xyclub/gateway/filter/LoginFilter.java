@@ -1,5 +1,6 @@
 package com.xyclub.gateway.filter;
 
+import cn.dev33.satoken.reactor.context.SaReactorSyncHolder;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.SneakyThrows;
@@ -29,15 +30,23 @@ public class LoginFilter implements GlobalFilter {
         ServerHttpRequest.Builder mutate = request.mutate();
         String url = request.getURI().getPath();
         log.info("LoginFilter.filter.url:{}", url);
-        if (url.equals("/auth/user/doLogin")) {
-            chain.filter(exchange);
+        if (url.endsWith(LOGIN_URL_SUFFIX)) {
+            return chain.filter(exchange);
         }
-        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        String loginId = (String) tokenInfo.getLoginId();
-        if (StringUtils.isEmpty(loginId)) {
+
+        String loginId;
+        try {
+            // Gateway is WebFlux; bind the current exchange before using synchronous Sa-Token APIs.
+            SaReactorSyncHolder.setContext(exchange);
+            SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+            loginId = String.valueOf(tokenInfo.getLoginId());
+        } finally {
+            SaReactorSyncHolder.clearContext();
+        }
+        if (StringUtils.isEmpty(loginId) || "null".equals(loginId)) {
             throw new Exception("未获取到用户信息");
         }
-        mutate.header("loginId", loginId);
+        mutate.header(LOGIN_ID_HEADER, loginId);
         return chain.filter(exchange.mutate().request(mutate.build()).build());
     }
 
