@@ -9,7 +9,9 @@ import com.xyclub.subject.domain.convert.SubjectLikedBOConverter;
 import com.xyclub.subject.domain.entity.SubjectLikedBO;
 import com.xyclub.subject.domain.redis.RedisUtil;
 import com.xyclub.subject.domain.service.SubjectLikedDomainService;
+import com.xyclub.subject.infra.basic.entity.SubjectInfo;
 import com.xyclub.subject.infra.basic.entity.SubjectLiked;
+import com.xyclub.subject.infra.basic.service.SubjectInfoService;
 import com.xyclub.subject.infra.basic.service.SubjectLikedService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -30,6 +32,9 @@ public class SubjectLikedDomainServiceImpl implements SubjectLikedDomainService 
 
     @Resource
     private SubjectLikedService subjectLikedService;
+
+    @Resource
+    private SubjectInfoService subjectInfoService;
 
     @Resource
     private RedisUtil redisUtil;
@@ -138,7 +143,7 @@ public class SubjectLikedDomainServiceImpl implements SubjectLikedDomainService 
             subjectLiked.setIsDeleted(IsDeletedFlagEnum.UN_DELETED.getCode());
             subjectLikedList.add(subjectLiked);
         });
-        subjectLikedService.batchInsert(subjectLikedList);
+        subjectLikedService.batchInsertOrUpdate(subjectLikedList);
     }
 
     /**
@@ -161,6 +166,10 @@ public class SubjectLikedDomainServiceImpl implements SubjectLikedDomainService 
         List<SubjectLiked> subjectLikedList = subjectLikedService.queryPage(
                 subjectLiked, start, subjectLikedBO.getPageSize());
         List<SubjectLikedBO> boList = SubjectLikedBOConverter.INSTANCE.convertListInfoToBO(subjectLikedList);
+        boList.forEach(info -> {
+            SubjectInfo subjectInfo = subjectInfoService.queryById(info.getSubjectId());
+            info.setSubjectName(subjectInfo.getSubjectName());
+        });
         pageResult.setRecords(boList);
         pageResult.setTotal(count);
         return pageResult;

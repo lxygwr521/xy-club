@@ -22,9 +22,11 @@
         <module name="xyclub-domain" />
         <module name="xyclub-infra" />
         <module name="xyclub-starter" />
+        <module name="xyclub-practice-server" />
         <module name="xyclub-auth-domain" />
         <module name="xyclub-application-controller" />
         <module name="xyclub-auth-application-mq" />
+        <module name="xyclub-practice-api" />
         <module name="xyclub-subject-api" />
       </profile>
     </annotationProcessing>

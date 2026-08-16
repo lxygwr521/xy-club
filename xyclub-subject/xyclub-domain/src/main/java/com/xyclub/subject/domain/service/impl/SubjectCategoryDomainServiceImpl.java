@@ -142,7 +142,13 @@ public class SubjectCategoryDomainServiceImpl implements SubjectCategoryDomainSe
                 log.error("query category label failed", e);
             }
         });
-        categoryBOList.forEach(categoryBO -> categoryBO.setLabelBOList(labelMap.get(categoryBO.getId())));
+        categoryBOList.forEach(categoryBO -> {
+            if (!CollectionUtils.isEmpty(labelMap.get(categoryBO.getId()))) {
+                categoryBO.setLabelBOList(labelMap.get(categoryBO.getId()));
+            }
+
+
+        });
         return categoryBOList;
     }
 

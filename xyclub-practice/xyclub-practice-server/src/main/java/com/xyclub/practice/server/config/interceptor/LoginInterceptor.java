@@ -1,16 +1,21 @@
-package com.xyclub.auth.application.interceptor;
+package com.xyclub.practice.server.config.interceptor;
 
-import com.xyclub.auth.context.LoginContextHolder;
+import com.xyclub.practice.server.config.context.LoginContextHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.apache.commons.lang3.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Restores login context from Feign or gateway request headers.
+ * 登录拦截器
+ *
+ * @author: ChickenWing
+ * @date: 2023/11/26
  */
 public class LoginInterceptor implements HandlerInterceptor {
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String loginId = request.getHeader("loginId");
@@ -20,10 +25,9 @@ public class LoginInterceptor implements HandlerInterceptor {
         return true;
     }
 
-
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
-                                @Nullable Exception ex) {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
         LoginContextHolder.remove();
     }
+
 }

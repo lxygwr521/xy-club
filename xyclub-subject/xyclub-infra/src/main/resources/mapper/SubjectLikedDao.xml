@@ -46,4 +46,27 @@
         limit #{start}, #{pageSize}
     </select>
 
+    <insert id="batchInsertOrUpdate">
+        insert into subject_liked(subject_id, like_user_id, status, created_by, created_time, update_by,
+        update_time, is_deleted)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.subjectId},
+            #{entity.likeUserId},
+            #{entity.status},
+            #{entity.createdBy},
+            #{entity.createdTime},
+            #{entity.updateBy},
+            #{entity.updateTime},
+            #{entity.isDeleted})
+        </foreach>
+        on duplicate key update
+        status = values(status),
+        created_by = values(created_by),
+        created_time = values(created_time),
+        update_by = values(update_by),
+        update_time = values(update_time),
+        is_deleted = values(is_deleted)
+    </insert>
+
 </mapper>

@@ -23,6 +23,11 @@ public class SubjectLikedBO extends PageInfo implements Serializable {
     private Long subjectId;
 
     /**
+     * 题目名称。
+     */
+    private String subjectName;
+
+    /**
      * 点赞人 id。
      */
     private String likeUserId;

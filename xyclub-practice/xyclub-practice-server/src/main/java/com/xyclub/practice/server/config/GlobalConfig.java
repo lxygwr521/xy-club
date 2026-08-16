@@ -1,9 +1,9 @@
-package com.xyclub.auth.application.config;
+package com.xyclub.practice.server.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.xyclub.auth.application.interceptor.LoginInterceptor;
+import com.xyclub.practice.server.config.interceptor.LoginInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -13,10 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import java.util.List;
 
 /**
- * MVC的全局处理
+ * mvc的全局处理
  *
- * @author lxy
- * @date 2026-07-20
+ * @author: ChickenWing
+ * @date: 2023/10/7
  */
 @Configuration
 public class GlobalConfig extends WebMvcConfigurationSupport {
