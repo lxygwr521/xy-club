@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyclub.practice.server.dao.SubjectMappingDao">
+
+    <!-- 统计指定分类下各标签的题目数量（仅统计未删除且指定题型的题目） -->
+    <select id="getLabelSubjectCount" resultType="com.xyclub.practice.server.entity.po.LabelCountPO">
+        select
+        count(distinct a.subject_id) as count,
+        a.label_id as labelId,
+        c.label_name as labelName
+        from subject_mapping a,
+        subject_info b,
+        subject_label c
+        where
+        a.subject_id = b.id
+        and a.label_id = c.id
+        and a.is_deleted = 0
+        and b.is_deleted = 0
+        and c.is_deleted = 0
+        and a.category_id = #{categoryId}
+        and b.subject_type in
+        <foreach collection="subjectTypeList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        group by a.label_id, c.label_name
+    </select>
+
+</mapper>
