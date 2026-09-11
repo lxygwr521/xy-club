@@ -22,6 +22,12 @@ spring:
             - Path=/subject/**
           filters:
             - StripPrefix=1
+        - id: practice
+          uri: lb://xyclub-practice-dev
+          predicates:
+            - Path=/practice/**
+          filters:
+            - StripPrefix=1
   redis:
     database: 1
     host: 182.92.176.188

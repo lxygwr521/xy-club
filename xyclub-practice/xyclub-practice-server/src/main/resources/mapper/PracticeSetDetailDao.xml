@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyclub.practice.server.dao.PracticeSetDetailDao">
+
+    <!-- 新增套题内容（套题与题目的关联记录） -->
+    <insert id="add">
+        INSERT INTO practice_set_detail(set_id, subject_id, subject_type, is_deleted, created_by, created_time)
+        values (#{setId,jdbcType=BIGINT},
+                #{subjectId,jdbcType=BIGINT},
+                #{subjectType,jdbcType=INTEGER},
+                #{isDeleted,jdbcType=INTEGER},
+                #{createdBy,jdbcType=VARCHAR},
+                #{createdTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 根据套题 id 查询套题包含的题目列表（按题目类型排序） -->
+    <select id="selectBySetId" resultType="com.xyclub.practice.server.entity.po.PracticeSetDetailPO">
+        select subject_id as subjectId, subject_type as subjectType
+        from practice_set_detail
+        where is_deleted = 0
+          and set_id = #{setId,jdbcType=BIGINT}
+        order by subject_type
+    </select>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyclub.practice.server.dao.PracticeSetDao">
+
+    <!-- 新增套题，插入后回填自增主键 id -->
+    <insert id="add">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO practice_set(set_name, set_type,primary_category_id, is_deleted, created_by, created_time)
+        values (
+        #{setName,jdbcType=VARCHAR},
+        #{setType,jdbcType=INTEGER},
+        #{primaryCategoryId,jdbcType=BIGINT},
+        #{isDeleted,jdbcType=INTEGER},
+        #{createdBy,jdbcType=VARCHAR},
+        #{createdTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <!-- 根据主键查询套题（未删除） -->
+    <select id="selectById" resultType="com.xyclub.practice.server.entity.po.PracticeSetPO">
+        select set_name            as setName,
+               set_type            as setType,
+               set_heat            as setHeat,
+               set_desc            as setDesc,
+               primary_category_id as primaryCategoryId
+        from practice_set
+        where is_deleted = 0
+          and id = #{setId,jdbcType=BIGINT}
+    </select>
+
+    <!-- 套题热度 +1（每次交卷调用） -->
+    <update id="updateHeat">
+        update practice_set
+        set set_heat = set_heat + 1
+        where id = #{setId,jdbcType=BIGINT}
+    </update>
+
+</mapper>
