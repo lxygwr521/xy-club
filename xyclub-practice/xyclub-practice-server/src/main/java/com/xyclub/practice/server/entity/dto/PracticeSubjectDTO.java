@@ -12,6 +12,11 @@ import java.util.List;
 public class PracticeSubjectDTO implements Serializable {
 
     /**
+     * 题目 id
+     */
+    private Long subjectId;
+
+    /**
      * 分类与标签组合的 ids（格式：分类ID-标签ID）
      */
     private List<String> assembleIds;

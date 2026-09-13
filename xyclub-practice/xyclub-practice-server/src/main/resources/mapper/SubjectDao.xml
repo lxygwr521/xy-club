@@ -26,6 +26,15 @@
         order by rand() LIMIT #{subjectCount, jdbcType= INTEGER};
     </select>
 
-
+    <select id="selectById"
+            resultType="com.xyclub.practice.server.entity.po.SubjectPO">
+        select id,
+               subject_name as subjectName,
+               subject_type as subjectType,
+               subject_parse as subjectParse
+        from subject_info
+        where id = #{subjectId,jdbcType=BIGINT}
+          and is_deleted = 0
+    </select>
 
 </mapper>

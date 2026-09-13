@@ -5,8 +5,10 @@ import com.xyclub.practice.api.enums.IsDeletedFlagEnum;
 import com.xyclub.practice.api.enums.SubjectInfoTypeEnum;
 import com.xyclub.practice.api.req.GetPracticeSubjectsReq;
 import com.xyclub.practice.api.vo.PracticeSetVO;
+import com.xyclub.practice.api.vo.PracticeSubjectOptionVO;
 import com.xyclub.practice.api.vo.PracticeSubjectListVO;
 import com.xyclub.practice.api.vo.PracticeSubjectDetailVO;
+import com.xyclub.practice.api.vo.PracticeSubjectVO;
 import com.xyclub.practice.api.vo.SpecialPracticeCategoryVO;
 import com.xyclub.practice.api.vo.SpecialPracticeLabelVO;
 import com.xyclub.practice.api.vo.SpecialPracticeVO;
@@ -18,6 +20,8 @@ import com.xyclub.practice.server.dao.SubjectCategoryDao;
 import com.xyclub.practice.server.dao.SubjectDao;
 import com.xyclub.practice.server.dao.SubjectLabelDao;
 import com.xyclub.practice.server.dao.SubjectMappingDao;
+import com.xyclub.practice.server.dao.SubjectMultipleDao;
+import com.xyclub.practice.server.dao.SubjectRadioDao;
 import com.xyclub.practice.server.entity.dto.CategoryDTO;
 import com.xyclub.practice.server.entity.dto.PracticeSubjectDTO;
 import com.xyclub.practice.server.entity.po.CategoryPO;
@@ -28,7 +32,9 @@ import com.xyclub.practice.server.entity.po.PracticeSetDetailPO;
 import com.xyclub.practice.server.entity.po.PracticeSetPO;
 import com.xyclub.practice.server.entity.po.PrimaryCategoryPO;
 import com.xyclub.practice.server.entity.po.SubjectLabelPO;
+import com.xyclub.practice.server.entity.po.SubjectMultiplePO;
 import com.xyclub.practice.server.entity.po.SubjectPO;
+import com.xyclub.practice.server.entity.po.SubjectRadioPO;
 import com.xyclub.practice.server.service.PracticeSetService;
 import com.xyclub.practice.server.util.LoginUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +96,18 @@ public class PracticeSetServiceImpl implements PracticeSetService {
      */
     @Resource
     private SubjectDao subjectDao;
+
+    /**
+     * 单选/判断题选项 DAO
+     */
+    @Resource
+    private SubjectRadioDao subjectRadioDao;
+
+    /**
+     * 多选题选项 DAO
+     */
+    @Resource
+    private SubjectMultipleDao subjectMultipleDao;
 
     /**
      * 练习详情 DAO
@@ -255,7 +273,7 @@ public class PracticeSetServiceImpl implements PracticeSetService {
             practiceSetDetailDao.add(detailPO);
         });
         setVO.setSetId(practiceSetId);
-        return setVO;
+        return setVO; //setId
     }
 
     /**
@@ -325,20 +343,23 @@ public class PracticeSetServiceImpl implements PracticeSetService {
      * 获取练习题目列表：根据套题 id 查询套题内容并组装标题
      *
      * @param req 请求参数（套题 id）
-     * @return 练习标题与题目列表
+     * @return 练习套题与题目列表
+     * 根据套题ID查询题目列表，组装VO；首次进入创建练习记录，继续练习则回填作答状态和已用时。
+     * 返回的 practiceId 是后续提交答案、记录进度的关键凭证。
      */
     @Override
     public PracticeSubjectListVO getSubjects(GetPracticeSubjectsReq req) {
         Long setId = req.getSetId();
         PracticeSubjectListVO vo = new PracticeSubjectListVO();
         List<PracticeSubjectDetailVO> practiceSubjectListVOS = new LinkedList<>();
-        // 查询套题下的题目明细
+        // PO层数据库中查出来的，查询套题内容（套题ID+题目ID + 题型等）
         List<PracticeSetDetailPO> practiceSetDetailPOS = practiceSetDetailDao.selectBySetId(setId);
         if (CollectionUtils.isEmpty(practiceSetDetailPOS)) {
             return vo;
         }
         String loginId = LoginUtil.getLoginId();
         Long practiceId = req.getPracticeId();
+       //VO层，给前端的，组装练习题列表，每道题只返回 subjectId 和 subjectType，题目的详细内容（题干、选项）不在这里返回，前端会根据这些ID去单独获取题目详情。
         practiceSetDetailPOS.forEach(e -> {
             PracticeSubjectDetailVO practiceSubjectListVO = new PracticeSubjectDetailVO();
             practiceSubjectListVO.setSubjectId(e.getSubjectId());
@@ -369,6 +390,16 @@ public class PracticeSetServiceImpl implements PracticeSetService {
             vo.setPracticeId(practiceId);
         }
         return vo;
+//        vo的结构
+//        {
+//            "practiceId": 1001,          // 练习记录ID（用于后续提交答案）
+//                "title": "缓存、数据库专项练习",
+//                "timeUse": 120,              // 已用时（秒），首次进入为 null
+//                "subjectList": [
+//            { "subjectId": 101, "subjectType": 1, "isAnswer": 0 },
+//            { "subjectId": 102, "subjectType": 2, "isAnswer": 1 }
+//  ]
+//        }
     }
 
     /**
@@ -401,6 +432,59 @@ public class PracticeSetServiceImpl implements PracticeSetService {
         practicePO.setId(practiceId);
         practicePO.setSubmitTime(new Date());
         practiceDao.update(practicePO);
+    }
+
+    /**
+     * 获取单道练习题详情及选项。
+     * 题目基础信息来自 subject_info，选项按题型从对应选项表查询。
+     */
+    @Override
+    public PracticeSubjectVO getPracticeSubject(PracticeSubjectDTO dto) {
+        PracticeSubjectVO result = new PracticeSubjectVO();
+        SubjectPO subjectPO = subjectDao.selectById(dto.getSubjectId());
+        if (Objects.isNull(subjectPO)) {
+            return result;
+        }
+
+        result.setSubjectName(subjectPO.getSubjectName());
+        result.setSubjectType(subjectPO.getSubjectType());
+        if (Objects.equals(dto.getSubjectType(), SubjectInfoTypeEnum.RADIO.getCode())) {
+            List<SubjectRadioPO> optionPOList = subjectRadioDao.selectBySubjectId(subjectPO.getId());
+            result.setOptionList(toRadioOptionList(optionPOList));
+        } else if (Objects.equals(dto.getSubjectType(), SubjectInfoTypeEnum.MULTIPLE.getCode())) {
+            List<SubjectMultiplePO> optionPOList = subjectMultipleDao.selectBySubjectId(subjectPO.getId());
+            result.setOptionList(toMultipleOptionList(optionPOList));
+        }
+        return result;
+    }
+
+//    将数据库的单选题选项实体（PO）转换为前端展示用的选项视图对象（VO）。
+    private List<PracticeSubjectOptionVO> toRadioOptionList(List<SubjectRadioPO> optionPOList) {
+        if (CollectionUtils.isEmpty(optionPOList)) {
+            return new LinkedList<>();
+        }
+        List<PracticeSubjectOptionVO> optionVOList = new LinkedList<>();
+        for (SubjectRadioPO optionPO : optionPOList) {
+            PracticeSubjectOptionVO optionVO = new PracticeSubjectOptionVO();
+            optionVO.setOptionType(optionPO.getOptionType());
+            optionVO.setOptionContent(optionPO.getOptionContent());
+            optionVOList.add(optionVO);
+        }
+        return optionVOList;
+    }
+
+    private List<PracticeSubjectOptionVO> toMultipleOptionList(List<SubjectMultiplePO> optionPOList) {
+        if (CollectionUtils.isEmpty(optionPOList)) {
+            return new LinkedList<>();
+        }
+        List<PracticeSubjectOptionVO> optionVOList = new LinkedList<>();
+        for (SubjectMultiplePO optionPO : optionPOList) {
+            PracticeSubjectOptionVO optionVO = new PracticeSubjectOptionVO();
+            optionVO.setOptionType(optionPO.getOptionType());
+            optionVO.setOptionContent(optionPO.getOptionContent());
+            optionVOList.add(optionVO);
+        }
+        return optionVOList;
     }
 
     /**

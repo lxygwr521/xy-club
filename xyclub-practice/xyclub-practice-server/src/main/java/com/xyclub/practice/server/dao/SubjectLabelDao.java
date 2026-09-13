@@ -1,6 +1,7 @@
 package com.xyclub.practice.server.dao;
 
 import com.xyclub.practice.server.entity.po.SubjectLabelPO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,5 +21,12 @@ public interface SubjectLabelDao {
      */
     SubjectLabelPO queryById(Long id);
 
+    /**
+     * 根据标签 id 集合批量查询标签名称。
+     *
+     * @param labelIds 标签 id 集合
+     * @return 标签名称集合
+     */
+    List<String> getLabelNameByIds(@Param("labelIds") List<Long> labelIds);
 
 }

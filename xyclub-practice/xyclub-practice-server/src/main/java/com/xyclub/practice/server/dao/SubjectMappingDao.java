@@ -2,6 +2,7 @@ package com.xyclub.practice.server.dao;
 
 
 import com.xyclub.practice.server.entity.po.LabelCountPO;
+import com.xyclub.practice.server.entity.po.SubjectMappingPO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -23,5 +24,13 @@ public interface SubjectMappingDao {
      */
     List<LabelCountPO> getLabelSubjectCount(@Param("categoryId") Long categoryId,
                                             @Param("subjectTypeList") List<Integer> subjectTypeList);
+
+    /**
+     * 查询题目关联的全部有效标签 id。
+     *
+     * @param subjectId 题目 id
+     * @return 题目和标签的关联记录
+     */
+    List<SubjectMappingPO> getLabelIdsBySubjectId(Long subjectId);
 
 }

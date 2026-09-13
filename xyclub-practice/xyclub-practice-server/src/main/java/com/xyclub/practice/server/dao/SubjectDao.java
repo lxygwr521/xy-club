@@ -2,6 +2,7 @@ package com.xyclub.practice.server.dao;
 
 import com.xyclub.practice.server.entity.dto.PracticeSubjectDTO;
 import com.xyclub.practice.server.entity.po.SubjectPO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,6 +18,11 @@ public interface SubjectDao {
      * @return 题目列表
      */
     List<SubjectPO> getPracticeSubject(PracticeSubjectDTO dto);
+
+    /**
+     * 根据题目 id 查询题目基础信息
+     */
+    SubjectPO selectById(@Param("subjectId") Long subjectId);
 
 
 }

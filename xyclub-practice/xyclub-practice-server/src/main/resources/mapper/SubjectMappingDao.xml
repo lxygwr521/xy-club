@@ -25,4 +25,13 @@
         group by a.label_id, c.label_name
     </select>
 
+    <!-- 查询指定题目关联的全部有效标签 id -->
+    <select id="getLabelIdsBySubjectId"
+            resultType="com.xyclub.practice.server.entity.po.SubjectMappingPO">
+        select distinct label_id as labelId
+        from subject_mapping
+        where is_deleted = 0
+          and subject_id = #{subjectId,jdbcType=BIGINT}
+    </select>
+
 </mapper>

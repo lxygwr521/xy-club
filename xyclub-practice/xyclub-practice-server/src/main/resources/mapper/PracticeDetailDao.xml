@@ -49,5 +49,28 @@
           and created_by = #{loginId}
     </select>
 
+    <!-- 用户重复提交同一道题时，只覆盖答案内容和判题结果，保留原始归属关系 -->
+    <update id="update">
+        update practice_detail
+        <set>
+            <if test="answerStatus != null">
+                answer_status = #{answerStatus},
+            </if>
+            <if test="answerContent != null">
+                answer_content = #{answerContent},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 查询某次练习中指定题目的用户答案，供答案解析页面回显 -->
+    <select id="selectAnswer"
+            resultType="com.xyclub.practice.server.entity.po.PracticeDetailPO">
+        select answer_content as answerContent
+        from practice_detail
+        where is_deleted = 0
+          and practice_id = #{practiceId,jdbcType=BIGINT}
+          and subject_id = #{subjectId,jdbcType=BIGINT}
+    </select>
 
 </mapper>

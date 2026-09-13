@@ -4,6 +4,7 @@ import com.xyclub.practice.api.req.GetPracticeSubjectsReq;
 import com.xyclub.practice.api.vo.SpecialPracticeVO;
 import com.xyclub.practice.api.vo.PracticeSetVO;
 import com.xyclub.practice.api.vo.PracticeSubjectListVO;
+import com.xyclub.practice.api.vo.PracticeSubjectVO;
 import com.xyclub.practice.server.entity.dto.PracticeSubjectDTO;
 
 import java.util.List;
@@ -33,5 +34,10 @@ public interface PracticeSetService {
      * @return 练习标题与题目列表
      */
     PracticeSubjectListVO getSubjects(GetPracticeSubjectsReq req);
+
+    /**
+     * 获取单道练习题详情及选项
+     */
+    PracticeSubjectVO getPracticeSubject(PracticeSubjectDTO dto);
 
 }

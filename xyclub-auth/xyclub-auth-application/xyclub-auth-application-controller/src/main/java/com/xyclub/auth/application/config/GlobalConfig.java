@@ -27,6 +27,7 @@ public class GlobalConfig extends WebMvcConfigurationSupport {
         converters.add(mappingJackson2HttpMessageConverter());
     }
 
+    //添加拦截器，从请求中获取用户上下文
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())

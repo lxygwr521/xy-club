@@ -46,5 +46,22 @@ public interface PracticeDetailDao {
                                   @Param("subjectId") Long subjectId,
                                   @Param("loginId") String loginId);
 
+    /**
+     * 更新已经存在的作答记录，主要用于用户返回上一题后重新选择答案。
+     *
+     * @param practiceDetailPO 包含记录 id、答案内容和判题结果
+     * @return 受影响行数
+     */
+    int update(PracticeDetailPO practiceDetailPO);
+
+    /**
+     * 查询某次练习中指定题目的用户答案。
+     *
+     * @param practiceId 练习 id
+     * @param subjectId  题目 id
+     * @return 对应的作答记录
+     */
+    PracticeDetailPO selectAnswer(@Param("practiceId") Long practiceId,
+                                  @Param("subjectId") Long subjectId);
 
 }

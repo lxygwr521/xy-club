@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xyclub.practice.server.dao.SubjectJudgeDao">
+
+    <!-- 查询判断题标准答案；字段名按当前 subject_judge 表的 is_deleted 定义处理 -->
+    <select id="selectBySubjectId"
+            resultType="com.xyclub.practice.server.entity.po.SubjectJudgePO">
+        select is_correct as isCorrect
+        from subject_judge
+        where is_deleted = 0
+          and subject_id = #{subjectId,jdbcType=BIGINT}
+    </select>
+
+</mapper>
