@@ -1,9 +1,11 @@
 package com.xyclub.practice.server.service;
 
+import com.xyclub.practice.api.req.GetReportReq;
 import com.xyclub.practice.api.req.GetScoreDetailReq;
 import com.xyclub.practice.api.req.GetSubjectDetailReq;
 import com.xyclub.practice.api.req.SubmitPracticeDetailReq;
 import com.xyclub.practice.api.req.SubmitSubjectDetailReq;
+import com.xyclub.practice.api.vo.ReportVO;
 import com.xyclub.practice.api.vo.ScoreDetailVO;
 import com.xyclub.practice.api.vo.SubjectDetailVO;
 
@@ -46,5 +48,13 @@ public interface PracticeDetailService {
      * @return 题目内容、标准答案、用户答案、选项和标签
      */
     SubjectDetailVO getSubjectDetail(GetSubjectDetailReq req);
+
+    /**
+     * 生成指定练习的评估报告。
+     *
+     * @param req 练习 id
+     * @return 套题名称、总体正确数和按标签统计的技能正确率
+     */
+    ReportVO getReport(GetReportReq req);
 
 }

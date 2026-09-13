@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.xyclub.practice.api.common.Result;
 import com.xyclub.practice.api.enums.SubjectInfoTypeEnum;
+import com.xyclub.practice.api.req.GetReportReq;
 import com.xyclub.practice.api.req.GetScoreDetailReq;
 import com.xyclub.practice.api.req.GetSubjectDetailReq;
 import com.xyclub.practice.api.req.SubmitPracticeDetailReq;
 import com.xyclub.practice.api.req.SubmitSubjectDetailReq;
+import com.xyclub.practice.api.vo.ReportVO;
 import com.xyclub.practice.api.vo.ScoreDetailVO;
 import com.xyclub.practice.api.vo.SubjectDetailVO;
 import com.xyclub.practice.server.service.PracticeDetailService;
@@ -154,6 +156,35 @@ public class PracticeDetailController {
         } catch (Exception e) {
             log.error("答案详情异常！错误原因{}", e.getMessage(), e);
             return Result.fail("答案详情异常！");
+        }
+    }
+
+    /**
+     * 获取一次练习的评估报告。
+     * 流程：校验练习 id，查询套题和作答记录，统计总体正确数及各标签正确率后返回。
+     *
+     * @param req 练习 id
+     * @return 套题名称、正确题数和技能图谱
+     */
+    @PostMapping(value = "/getReport")
+    public Result<ReportVO> getReport(@RequestBody GetReportReq req) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("获取评估报告入参{}", JSON.toJSONString(req));
+            }
+            Preconditions.checkArgument(!Objects.isNull(req), "参数不能为空！");
+            Preconditions.checkArgument(!Objects.isNull(req.getPracticeId()), "练习id不能为空！");
+            ReportVO reportVO = practiceDetailService.getReport(req);
+            if (log.isInfoEnabled()) {
+                log.info("获取评估报告出参{}", JSON.toJSONString(reportVO));
+            }
+            return Result.ok(reportVO);
+        } catch (IllegalArgumentException e) {
+            log.error("参数异常！错误原因{}", e.getMessage(), e);
+            return Result.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取评估报告异常！错误原因{}", e.getMessage(), e);
+            return Result.fail("获取评估报告异常！");
         }
     }
 

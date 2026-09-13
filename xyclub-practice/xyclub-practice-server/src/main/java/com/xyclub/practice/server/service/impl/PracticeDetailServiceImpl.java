@@ -3,13 +3,17 @@ package com.xyclub.practice.server.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.xyclub.practice.api.enums.CompleteStatusEnum;
+import com.xyclub.practice.api.enums.AnswerStatusEnum;
 import com.xyclub.practice.api.enums.IsDeletedFlagEnum;
 import com.xyclub.practice.api.enums.SubjectInfoTypeEnum;
+import com.xyclub.practice.api.req.GetReportReq;
 import com.xyclub.practice.api.req.GetScoreDetailReq;
 import com.xyclub.practice.api.req.GetSubjectDetailReq;
 import com.xyclub.practice.api.req.SubmitPracticeDetailReq;
 import com.xyclub.practice.api.req.SubmitSubjectDetailReq;
 import com.xyclub.practice.api.vo.PracticeSubjectOptionVO;
+import com.xyclub.practice.api.vo.ReportSkillVO;
+import com.xyclub.practice.api.vo.ReportVO;
 import com.xyclub.practice.api.vo.ScoreDetailVO;
 import com.xyclub.practice.api.vo.SubjectDetailVO;
 import com.xyclub.practice.server.dao.PracticeDao;
@@ -28,7 +32,9 @@ import com.xyclub.practice.server.entity.dto.SubjectOptionDTO;
 import com.xyclub.practice.server.entity.po.PracticeDetailPO;
 import com.xyclub.practice.server.entity.po.PracticePO;
 import com.xyclub.practice.server.entity.po.PracticeSetDetailPO;
+import com.xyclub.practice.server.entity.po.PracticeSetPO;
 import com.xyclub.practice.server.entity.po.SubjectJudgePO;
+import com.xyclub.practice.server.entity.po.SubjectLabelPO;
 import com.xyclub.practice.server.entity.po.SubjectMappingPO;
 import com.xyclub.practice.server.entity.po.SubjectMultiplePO;
 import com.xyclub.practice.server.entity.po.SubjectPO;
@@ -47,8 +53,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -327,6 +335,88 @@ public class PracticeDetailServiceImpl implements PracticeDetailService {
         subjectDetailVO.setRespondAnswer(respondAnswer);
         subjectDetailVO.setLabelNames(labelNameList);
         return subjectDetailVO;
+    }
+
+    /**
+     * 生成练习评估报告。
+     * 流程：根据练习定位套题名称，统计总体答对数量，再分别汇总所有题目和正确题目的标签次数，
+     * 通过“标签正确次数 / 标签总出现次数”计算各技能正确率。
+     *
+     * @param req 练习 id
+     * @return 套题标题、总体正确数和各标签技能正确率
+     */
+    @Override
+    public ReportVO getReport(GetReportReq req) {
+        Long practiceId = req.getPracticeId();
+        PracticePO practicePO = practiceDao.selectById(practiceId);
+        Long setId = practicePO.getSetId();
+        PracticeSetPO practiceSetPO = practiceSetDao.selectById(setId);
+
+        ReportVO reportVO = new ReportVO();
+        reportVO.setTitle(practiceSetPO.getSetName());
+
+        List<PracticeDetailPO> practiceDetailPOList = practiceDetailDao.selectByPracticeId(practiceId);
+        if (CollectionUtils.isEmpty(practiceDetailPOList)) {
+            return null;
+        }
+
+        int totalCount = practiceDetailPOList.size();
+        List<PracticeDetailPO> correctPracticeDetailList = practiceDetailPOList.stream()
+                .filter(detail -> Objects.equals(detail.getAnswerStatus(), AnswerStatusEnum.CORRECT.getCode()))
+                .collect(Collectors.toList());
+        reportVO.setCorrectSubject(correctPracticeDetailList.size() + "/" + totalCount);
+
+        Map<Long, Integer> totalLabelCountMap = getSubjectLabelMap(practiceDetailPOList);
+        Map<Long, Integer> correctLabelCountMap = getSubjectLabelMap(correctPracticeDetailList);
+        List<ReportSkillVO> reportSkillList = new LinkedList<>();
+        totalLabelCountMap.forEach((labelId, labelTotalCount) -> {
+            SubjectLabelPO labelPO = subjectLabelDao.queryById(labelId);
+            int labelCorrectCount = correctLabelCountMap.getOrDefault(labelId, 0);
+
+            BigDecimal correctRate = BigDecimal.ZERO;
+            if (!Objects.equals(labelTotalCount, 0)) {
+                correctRate = new BigDecimal(String.valueOf(labelCorrectCount))
+                        .divide(new BigDecimal(String.valueOf(labelTotalCount)), 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal("100"));
+            }
+
+            ReportSkillVO skillVO = new ReportSkillVO();
+            skillVO.setName(labelPO.getLabelName());
+            skillVO.setStar(correctRate);
+            reportSkillList.add(skillVO);
+        });
+
+        if (log.isInfoEnabled()) {
+            log.info("获取到的正确率{}", JSON.toJSONString(reportSkillList));
+        }
+        reportVO.setSkill(reportSkillList);
+        return reportVO;
+    }
+
+    /**
+     * 按题目关联标签统计出现次数。
+     * 流程：遍历作答明细，根据题目 id 查询关联标签，并累加每个标签对应的题目数量。
+     *
+     * @param practiceDetailPOList 待统计的作答明细
+     * @return 标签 id 与出现次数的映射
+     */
+    private Map<Long, Integer> getSubjectLabelMap(List<PracticeDetailPO> practiceDetailPOList) {
+        if (CollectionUtils.isEmpty(practiceDetailPOList)) {
+            return Collections.emptyMap();
+        }
+
+        Map<Long, Integer> labelCountMap = new HashMap<>();
+        practiceDetailPOList.forEach(detail -> {
+            List<SubjectMappingPO> subjectMappingList =
+                    subjectMappingDao.getLabelIdsBySubjectId(detail.getSubjectId());
+            subjectMappingList.forEach(subjectMapping ->
+                    labelCountMap.merge(subjectMapping.getLabelId(), 1, Integer::sum));
+        });
+
+        if (log.isInfoEnabled()) {
+            log.info("获取到的题目对应的标签map{}", JSON.toJSONString(labelCountMap));
+        }
+        return labelCountMap;
     }
 
     /**
