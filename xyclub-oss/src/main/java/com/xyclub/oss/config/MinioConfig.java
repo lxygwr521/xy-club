@@ -1,5 +1,4 @@
 package com.xyclub.oss.config;
-
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +15,6 @@ public class MinioConfig {
 
     @Value("${minio.secretKey}")
     private String secretKey;
-
     @Bean
     public MinioClient getMinioClient() {
         return MinioClient.builder().endpoint(url).credentials(accessKey, secretKey).build();

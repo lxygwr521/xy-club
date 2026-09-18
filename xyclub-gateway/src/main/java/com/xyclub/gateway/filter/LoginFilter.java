@@ -23,6 +23,7 @@ public class LoginFilter implements GlobalFilter {
 
     private static final String LOGIN_ID_HEADER = "loginId";
     private static final String LOGIN_URL_SUFFIX = "/user/doLogin";
+    private static final String DEV_LOGIN_URL_SUFFIX = "/user/devLogin";
 
     @Override
     @SneakyThrows
@@ -32,7 +33,9 @@ public class LoginFilter implements GlobalFilter {
         ServerHttpRequest.Builder mutate = request.mutate();
         String url = request.getURI().getPath();
         log.info("LoginFilter.filter.url:{}", url);
-        if (url.equals("/user/doLogin")) {
+        // 登录请求进入网关时可能保留 /auth 前缀，也可能已经被 StripPrefix 去除，
+        // 使用路径后缀判断可同时兼容两种情况。开发登录仅在 Auth 服务的 dev Profile 下生效。
+        if (url.endsWith(LOGIN_URL_SUFFIX) || url.endsWith(DEV_LOGIN_URL_SUFFIX)) {
             return chain.filter(exchange);
         }
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();

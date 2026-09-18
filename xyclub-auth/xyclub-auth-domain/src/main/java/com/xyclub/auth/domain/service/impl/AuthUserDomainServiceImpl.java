@@ -160,7 +160,7 @@ public class AuthUserDomainServiceImpl implements AuthUserDomainService {
         String loginKey = redisUtil.buildKey(LOGIN_PREFIX, validCode);
         String openId =  redisUtil.get(loginKey);
         if (StringUtils.isBlank(openId)) {
-            return null;
+                throw new IllegalArgumentException("验证码错误或已过期");
         }
         // 用 OpenID 作为 userName 自动注册（首次创建用户，再次则 insert 无影响）
         AuthUserBO authUserBO = new AuthUserBO();
